@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Archivator_desktop_WPF_WTS": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ENABLE_XAML_DIAGNOSTICS_SOURCE_INFO": "1"
+      }
+    }
+  }
+}

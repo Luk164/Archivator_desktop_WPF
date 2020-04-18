@@ -1,0 +1,100 @@
+﻿<Page
+    x:Class="Archivator_desktop_WPF_WTS.Views.MasterDetailPage"
+    Style="{DynamicResource MahApps.Styles.Page}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:strings="clr-namespace:Archivator_desktop_WPF_WTS.Strings"
+    xmlns:viewModels="clr-namespace:Archivator_desktop_WPF_WTS.ViewModels"
+    xmlns:entities="clr-namespace:ArchivatorDb.Entities;assembly=ArchivatorDb"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    d:DataContext="{d:DesignInstance viewModels:TagsViewModel}">
+    <Page.Resources>
+        <DataTemplate x:Key="ItemTemplate" DataType="entities:Tag">
+            <Grid Height="60">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    Text="&#xE8EC;"
+                    Style="{StaticResource MediumIconStyle}"
+                    Margin="{StaticResource XSmallLeftMargin}"
+                    AutomationProperties.Name="List editedObject icon" />
+                <StackPanel
+                    Grid.Column="1"
+                    Margin="{StaticResource SmallLeftMargin}"
+                    VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource ListTitleStyle}" Text="{Binding Name}" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="DetailTemplate" DataType="entities:Tag">
+            <ScrollViewer
+                Name="ForegroundElement"
+                HorizontalAlignment="Stretch">
+                <StackPanel HorizontalAlignment="Stretch" Margin="{StaticResource MediumLeftTopRightBottomMargin}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <TextBlock
+                            Text="&#xE8EC;"
+                            Style="{StaticResource BigIconStyle}"
+                            AutomationProperties.Name="Detail icon" />
+                        <TextBlock
+                            Margin="{StaticResource SmallLeftMargin}"
+                            Text="{Binding Name, Mode=OneWay}"
+                            Style="{StaticResource PageTitleStyle}" />
+                    </StackPanel>
+                    <DockPanel Height="293">
+                        <Label Content="Edit selected Tag" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
+                        <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeyUp="SubmitChanges" DockPanel.Dock="Top"  VerticalAlignment="Bottom" Margin="10,0,10,0"/>
+                        <DataGrid DockPanel.Dock="Bottom" ItemsSource="{Binding Events, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" AllowDrop="False" AutomationProperties.Name="Events" Margin="10,10,10,0" VerticalAlignment="Stretch" Height="110">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Event.ParenItem.Name, UpdateSourceTrigger=PropertyChanged}"/>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Event.Name, UpdateSourceTrigger=PropertyChanged}"/>
+                                <DataGridTextColumn Header="Description" Binding="{Binding Event.Description, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+                                <DataGridTextColumn Header="Date" Binding="{Binding Event.Date, UpdateSourceTrigger=PropertyChanged}" />
+                                <DataGridTextColumn Header="AuxDate" Binding="{Binding Event.AuxDate, UpdateSourceTrigger=PropertyChanged}" />
+                                <DataGridTextColumn Header="Location" Binding="{Binding Event.Location, UpdateSourceTrigger=PropertyChanged}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </DataTemplate>
+    </Page.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="180" MaxWidth="300" Width="*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock
+                Style="{StaticResource PageTitleStyle}"
+                Text="{x:Static strings:Resources.TagsMDPageTitle}" />
+            <DockPanel Grid.Row="1">
+                <DockPanel DockPanel.Dock="Bottom">
+                    <TextBox x:Name="tb_new_tag" mah:TextBoxHelper.Watermark="Create new tag" DockPanel.Dock="Top" Margin="0,10,0,0" KeyUp="tb_new_tag_KeyUp"/>
+                </DockPanel>
+                <ListView
+                    DockPanel.Dock="Top"
+                    ItemsSource="{Binding Items}"
+                    ItemTemplate="{StaticResource ItemTemplate}"
+                    SelectedItem="{Binding Selected, Mode=TwoWay}" />
+            </DockPanel>
+        </Grid>
+        <ContentControl
+            Grid.Column="1"
+            Content="{Binding Selected}"
+            ContentTemplate="{StaticResource DetailTemplate}" />
+    </Grid>
+</Page>

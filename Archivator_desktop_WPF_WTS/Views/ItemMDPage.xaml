@@ -1,0 +1,125 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:strings="clr-namespace:Archivator_desktop_WPF_WTS.Strings"
+    xmlns:viewModels="clr-namespace:Archivator_desktop_WPF_WTS.ViewModels"
+    xmlns:entities="clr-namespace:ArchivatorDb.Entities;assembly=ArchivatorDb"
+    xmlns:Converters="clr-namespace:Archivator_desktop_WPF_WTS.Converters"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    x:Class="Archivator_desktop_WPF_WTS.Views.ItemMDPage"
+    Style="{DynamicResource MahApps.Styles.Page}"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    d:DataContext="{d:DesignInstance {x:Type viewModels:ItemMDViewModel}}">
+    <Page.Resources>
+        <Converters:TagListToStringConverter x:Key="TagListToStringConverter"/>
+        <DataTemplate x:Key="ItemTemplate" DataType="entities:Item">
+            <Grid Height="60">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    Text="&#xE12B;"
+                    Style="{StaticResource MediumIconStyle}"
+                    Margin="{StaticResource XSmallLeftMargin}"
+                    AutomationProperties.Name="List editedObject icon" />
+                <StackPanel
+                    Grid.Column="1"
+                    Margin="{StaticResource SmallLeftMargin}"
+                    VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource ListTitleStyle}" Text="{Binding Name}" />
+                    <TextBlock Style="{StaticResource ListSubTitleStyle}" Text="{Binding Description}" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="DetailTemplate" DataType="viewModels:ItemMDViewModel">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="Auto" Margin="0,0,0,0">
+                    <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" Content="&#xE70F;" Click="bt_edit" MinWidth="20" MinHeight="20" FontFamily="Segoe MDL2 Assets" FontSize="24"/>
+                    <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" Content="&#xE74D;" Click="bt_delete" FontFamily="Segoe MDL2 Assets" FontSize="24"/>
+                </StackPanel>
+                <ScrollViewer
+                    x:Name="ForegroundElement"
+                    HorizontalAlignment="Stretch"
+                    VerticalScrollBarVisibility="Auto"
+                    CanContentScroll="False">
+                    <StackPanel HorizontalAlignment="Left" Margin="{StaticResource MediumLeftTopRightBottomMargin}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                            <TextBlock
+                                Text="&#xE12B;"
+                                Style="{StaticResource BigIconStyle}"
+                                AutomationProperties.Name="Detail icon" />
+                            <TextBlock
+                                Margin="{StaticResource SmallLeftMargin}"
+                                Text="{Binding Selected.Name, Mode=OneWay}"
+                                Style="{StaticResource PageTitleStyle}" />
+                        </StackPanel>
+                        <StackPanel Margin="{StaticResource SmallTopMargin}">
+                            <TextBlock
+                                Margin="{StaticResource MediumTopMargin}"
+                                Style="{StaticResource SubtitleTextStyle}"
+                                Text="Description" />
+                            <TextBlock
+                                Style="{StaticResource BodyTextStyle}"
+                                Text="{Binding Selected.Description}"
+                                AutomationProperties.Name="Detail description"
+                                AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}" />
+                            <DataGrid ItemsSource="{Binding Selected.Files}"
+                                      Margin="10,10,10,0"
+                                      IsSynchronizedWithCurrentItem="True"
+                                      IsReadOnly="True" CanUserAddRows="False" AutomationProperties.Name="Files" AutoGenerateColumns="False" HorizontalAlignment="Right" Height="Auto" VerticalAlignment="Top">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="FileName" Binding="{Binding FileName, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+                                    <DataGridTextColumn Header="Size" Binding="{Binding Data.Length, Converter={StaticResource DataConverter}, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Label Content="Events" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <DataGrid DockPanel.Dock="Bottom" ItemsSource="{Binding Selected.Events, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" AllowDrop="False" AutomationProperties.Name="Events" Margin="10,10,10,0" VerticalAlignment="Stretch" Height="110">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+                                    <DataGridTextColumn Header="Date" Binding="{Binding Date, UpdateSourceTrigger=PropertyChanged}" />
+                                    <DataGridTextColumn Header="AuxDate" Binding="{Binding AuxDate, UpdateSourceTrigger=PropertyChanged}" />
+                                    <DataGridTextColumn Header="Location" Binding="{Binding Location, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridTextColumn Header="Tags"
+                                                        Binding="{Binding Tags, Converter={StaticResource TagListToStringConverter}, FallbackValue=N/A, Mode=OneWay, TargetNullValue=N/A}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </DataTemplate>
+    </Page.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="180" MaxWidth="300" Width="*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock
+                Style="{StaticResource PageTitleStyle}"
+                Text="{x:Static strings:Resources.ItemMDPageTitle}" />
+            <ListView
+                Grid.Row="1"
+                ItemsSource="{Binding Items}"
+                ItemTemplate="{StaticResource ItemTemplate}"
+                SelectedItem="{Binding Selected, Mode=TwoWay}" />
+        </Grid>
+        <ContentControl
+            Grid.Column="1"
+            Content="{Binding Mode=OneWay}"
+            ContentTemplate="{StaticResource DetailTemplate}" />
+    </Grid>
+</Page>

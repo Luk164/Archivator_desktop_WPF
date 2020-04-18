@@ -1,0 +1,15 @@
+
+Archivator_desktop_WPF_WTS/bin/
+
+Archivator_desktop_WPF_WTS.Packaging/bin/
+
+Dependencies/
+
+.vs/
+
+SetupProject/Debug/
+
+SetupProject/Release/
+Archivator_desktop_WPF_WTS.Core/bin/
+
+Archivator_desktop_WPF_WTS.Core/obj/
