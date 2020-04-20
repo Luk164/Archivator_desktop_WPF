@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
@@ -17,6 +17,14 @@ namespace Archivator_desktop_WPF_WTS
 
         public const string CONN_STRING_KEY = "DbConnString";
 
+        public const string FILE_FILTER_STRING =
+            "All files (*.*)|*.*|" +
+            "Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|" +
+            "Text Files(*.txt)|*.txt|" +
+            "Office documents(*.docx;*.pptx,*.xlsx)|*.docx;*.pptx,*.xlsx|" +
+            "Office 2013 documents(*.doc;*.ppt,*.xls)|*.doc;*.ppt,*.xls|" +
+            "PDF Documents(*.pdf)|*.pdf";
+
         public static void AddRange<T>(this ICollection<T> list, IEnumerable<T> items)
         {
             if (list == null) throw new ArgumentNullException(nameof(list));
@@ -34,18 +42,6 @@ namespace Archivator_desktop_WPF_WTS
                 }
             }
         }
-
-        //public static string GetConnectionString()
-        //{
-        //    return DEFAULT_CONNECTION_STRING;
-
-        //    SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-        //    builder.ConnectionString =
-        //        "Data Source=(LocalDB)\\MSSQLLocalDB;Database=Archivator_LocalTest;AttachDbFilename=D:\\User_files\\Projekty\\C#\\Archivator_desktop_WPF_WTS\\Archivator_desktop_WPF_WTS\\LocalDb.mdf;Integrated Security=True;Trusted_Connection=True";
-        //    builder.AttachDBFilename = Directory.GetCurrentDirectory() + "\\LocalDb.mdf";
-            
-        //    return builder.ConnectionString;
-        //}
 
         public static bool TestConnection(this DbContext context)
         {

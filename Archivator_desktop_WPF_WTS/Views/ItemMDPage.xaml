@@ -73,6 +73,8 @@
                             <DataGrid ItemsSource="{Binding Selected.Files}"
                                       Margin="10,10,10,0"
                                       IsSynchronizedWithCurrentItem="True"
+                                      MouseDoubleClick="Control_OnMouseDoubleClick"
+                                      SelectedItem="{Binding SelectedFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsReadOnly="True" CanUserAddRows="False" AutomationProperties.Name="Files" AutoGenerateColumns="False" HorizontalAlignment="Right" Height="Auto" VerticalAlignment="Top">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="FileName" Binding="{Binding FileName, UpdateSourceTrigger=PropertyChanged}"/>

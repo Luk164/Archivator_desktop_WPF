@@ -68,35 +68,5 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
         private void OnPrivacyStatement()
             => _systemService.OpenInWebBrowser(_config.PrivacyStatement);
-
-        public string GetDbConnString()
-        {
-            var currConnString = (string) App.Current.Properties[StaticUtilities.CONN_STRING_KEY];
-
-            if (currConnString == null || string.IsNullOrWhiteSpace(currConnString))
-            {
-                currConnString = StaticUtilities.DEFAULT_CONNECTION_STRING;
-            }
-
-            return currConnString;
-        }
-
-        public bool OnSetConnString(string newConString)
-        {
-            if (newConString != null && !string.IsNullOrWhiteSpace(newConString))
-            {
-                if (_context.TestConnection())
-                {
-                    
-                    App.Current.Properties[StaticUtilities.CONN_STRING_KEY] = newConString;
-                    new ArchivatorDbContext();
-                    return true;
-                }
-
-                return false;
-            }
-
-            return false;
-        }
     }
 }

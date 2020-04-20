@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using Archivator_desktop_WPF_WTS.Contracts.Services;
@@ -12,6 +13,7 @@ using Archivator_desktop_WPF_WTS.Models;
 using ArchivatorDb;
 using ArchivatorDb.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
 {
@@ -20,6 +22,13 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private Item _selected;
         private readonly ArchivatorDbContext _context;
         private readonly INavigationService _navigationService;
+        private FileEntity _selectedFile;
+
+        public FileEntity SelectedFile
+        {
+            get => _selectedFile;
+            set => Set(ref _selectedFile, value);
+        }
 
         public Item Selected
         {
@@ -82,6 +91,44 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
         public void OnNavigatedFrom()
         {
+        }
+
+        public void SaveFile()
+        {
+            if (_selectedFile == null)
+            {
+                MessageBox.Show("ERROR: No file selected!", "General error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+
+            try
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog
+                {
+                    Filter = StaticUtilities.FILE_FILTER_STRING,
+                    DefaultExt = Path.GetExtension(_selectedFile.FileName) ?? throw new InvalidOperationException(),
+                    FileName = Path.GetFileNameWithoutExtension(_selectedFile.FileName) ??
+                               throw new InvalidOperationException()
+                };
+                if (saveFileDialog.ShowDialog() == false) //if cancelled
+                {
+                    return;
+                }
+                    
+                if (saveFileDialog.FileName.IndexOfAny(Path.GetInvalidFileNameChars()) == -1)
+                {
+                    MessageBox.Show("Invalid character/s detected in fileName!\nInvalid characters: " + Path.GetInvalidFileNameChars());
+                }
+                else
+                {
+                    File.WriteAllBytesAsync(saveFileDialog.FileName, _selectedFile.Data);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("ERROR: A following exception has occured!: " + e.Message, "Unexpected exception",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

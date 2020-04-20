@@ -60,7 +60,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             _context.SaveChangesAsync();
         }
 
-        public async void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(object parameter)
         {
             Items = new ObservableCollection<Tag>(_context.Tags);
 

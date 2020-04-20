@@ -139,6 +139,11 @@ namespace Archivator_desktop_WPF_WTS.Views
             _viewModel.RemoveTag((int) ((CheckBox)sender).Tag);
         }
 
+        /// <summary>
+        /// WIP printing system
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_Click(object sender, RoutedEventArgs e)
         {
             PrintDialog dialog = new PrintDialog();
@@ -146,7 +151,7 @@ namespace Archivator_desktop_WPF_WTS.Views
             {
                 //Size pageSize = new Size(dialog.PrintableAreaWidth , dialog.PrintableAreaHeight );
                 //bt_submit.Measure(pageSize);
-                dialog.PrintVisual(dg_files, "Rapport");
+                dialog.PrintVisual(dg_files, "Report");
             }
             //dialog.PrintVisual(bt_submit, "");
         }

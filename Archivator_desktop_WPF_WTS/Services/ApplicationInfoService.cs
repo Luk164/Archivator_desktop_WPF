@@ -24,10 +24,8 @@ namespace Archivator_desktop_WPF_WTS.Services
             catch (Exception)
             {
                 //Console.WriteLine("Debug mode detected!");
-                return new Version(1, 0, 6);
+                return new Version(6, 6, 6);
             }
-
-            
         }
     }
 }

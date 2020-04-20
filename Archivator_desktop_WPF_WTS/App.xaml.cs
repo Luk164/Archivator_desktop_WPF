@@ -1,9 +1,7 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Navigation;
 using System.Windows.Threading;
 
 using Archivator_desktop_WPF_WTS.Contracts.Services;
@@ -44,10 +42,9 @@ namespace Archivator_desktop_WPF_WTS
                     .ConfigureServices(ConfigureServices)
                     .Build();
 
-            await _host.StartAsync();
-            var test = _host.Services.GetService<ArchivatorDbContext>();
+            InitDatabase(); //Ensures database is migrated
 
-            InitDatabase();
+            await _host.StartAsync();
         }
 
         private void InitDatabase()
@@ -62,6 +59,7 @@ namespace Archivator_desktop_WPF_WTS
                 var result = MessageBox.Show("An error occured while trying to migrate database: " + e.Message + " please check connection string. If you do not already have SQL Express installed, click yes to install it.", "Exception Occured",
                     MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
+                // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault MessageBox return only Yes or No
                 switch(result)
                 {
                     case MessageBoxResult.Yes:
@@ -71,7 +69,6 @@ namespace Archivator_desktop_WPF_WTS
                         break;
                 }
             }
-            
         }
 
         private void SetupBuilder(DbContextOptionsBuilder builder)
@@ -79,26 +76,13 @@ namespace Archivator_desktop_WPF_WTS
             try
             {
                 builder.UseLazyLoadingProxies();
-                if (_configuration.GetSection("SQLProvider").Value == "MSSQL")
-                {
-                    builder.UseSqlServer(_configuration.GetSection(StaticUtilities.CONN_STRING_KEY).Value);
-                }
-                else if (_configuration.GetSection("SQLProvider").Value == "MYSQL")
-                {
-                    builder.UseMySql(_configuration.GetSection(StaticUtilities.CONN_STRING_KEY).Value);
-                }
-                else
-                {
-                    MessageBox.Show("ERROR: Unknown SQL provider specified! Use either \"MSSQL\" or \"MYSQL\"!\n Provided: " + _configuration.GetSection("SQLProvider").Value, "ERROR", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+                builder.UseSqlServer(_configuration.GetSection(StaticUtilities.CONN_STRING_KEY).Value, optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(App).Namespace));
             }
             catch (Exception e)
             {
                 MessageBox.Show("ERROR: Unknown error has occured: " + e.Message, "Unknown error", MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
-            
-            
         }
 
         private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
