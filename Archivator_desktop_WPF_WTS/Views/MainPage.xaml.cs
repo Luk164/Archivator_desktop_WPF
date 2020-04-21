@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -7,13 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using Windows.ApplicationModel.UserDataTasks;
 using Archivator_desktop_WPF_WTS.Contracts.Services;
-using Archivator_desktop_WPF_WTS.Services;
 using Archivator_desktop_WPF_WTS.ViewModels;
-using ArchivatorDb;
 using ArchivatorDb.Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 
 namespace Archivator_desktop_WPF_WTS.Views
