@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Text;
+using System.Windows;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Archivator_desktop_WPF_WTS
 {
@@ -56,6 +58,21 @@ namespace Archivator_desktop_WPF_WTS
             catch
             {
                 return false;
+            }
+        }
+
+        public static void SetupDatabase(DbContextOptionsBuilder builder, IConfiguration configuration)
+        {
+            try
+            {
+                builder.UseLazyLoadingProxies();
+                builder.UseSqlServer(configuration.GetSection(StaticUtilities.CONN_STRING_KEY).Value,
+                    optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(App).Namespace));
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("ERROR: Unknown error has occured: " + e.Message, "Unknown error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
     }

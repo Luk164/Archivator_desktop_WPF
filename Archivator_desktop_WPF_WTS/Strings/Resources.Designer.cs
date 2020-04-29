@@ -97,7 +97,7 @@ namespace Archivator_desktop_WPF_WTS.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Settings page placeholder text.  Your app description goes here..
+        ///   Looks up a localized string similar to Experimental data and document archivation app. Use at your own risk. Author: Lukáš Josai.
         /// </summary>
         public static string SettingsPageAboutText {
             get {
