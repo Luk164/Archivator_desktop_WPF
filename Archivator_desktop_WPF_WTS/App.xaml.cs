@@ -14,6 +14,7 @@ using Archivator_desktop_WPF_WTS.ViewModels;
 using Archivator_desktop_WPF_WTS.Views;
 using ArchivatorDb;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,23 +29,27 @@ namespace Archivator_desktop_WPF_WTS
         private IConfiguration _configuration;
         private readonly DbContextOptionsBuilder<ArchivatorDbContext> _builder = new DbContextOptionsBuilder<ArchivatorDbContext>();
 
-        public App()
-        {
-        }
-
         private async void OnStartup(object sender, StartupEventArgs e)
         {
-            var appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            try
+            {
+                var appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
 
-            // For more information about .NET generic host see  https://docs.microsoft.com/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-3.0
-            _host = Host.CreateDefaultBuilder(e.Args)
+                // For more information about .NET generic host see  https://docs.microsoft.com/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-3.0
+                _host = Host.CreateDefaultBuilder(e.Args)
                     .ConfigureAppConfiguration(c => c.SetBasePath(appLocation))
                     .ConfigureServices(ConfigureServices)
                     .Build();
 
-            InitDatabase(); //Ensures database is migrated
+                InitDatabase(); //Ensures database is migrated
 
-            await _host.StartAsync();
+                await _host.StartAsync();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("ERROR: An unhandled exception has occured! " + exception.Message , "FATAL ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
         }
 
         private void InitDatabase()
@@ -73,16 +78,7 @@ namespace Archivator_desktop_WPF_WTS
 
         private void SetupBuilder(DbContextOptionsBuilder builder)
         {
-            try
-            {
-                builder.UseLazyLoadingProxies();
-                builder.UseSqlServer(_configuration.GetSection(StaticUtilities.CONN_STRING_KEY).Value, optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(App).Namespace));
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("ERROR: Unknown error has occured: " + e.Message, "Unknown error", MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
+            StaticUtilities.SetupDatabase(builder, _configuration);
         }
 
         private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
@@ -141,6 +137,26 @@ namespace Archivator_desktop_WPF_WTS
         {
             MessageBox.Show("An unhandled exception just occurred: " + e.Exception.Message, "Exception Occured", MessageBoxButton.OK, MessageBoxImage.Warning);
             e.Handled = true;
+        }
+    }
+
+    /// <summary>
+    /// Allows Entity Framework to find and migrate DbContext. Only used at design time!
+    /// </summary>
+    public class DbContextFactory : IDesignTimeDbContextFactory<ArchivatorDbContext>
+    {
+        public ArchivatorDbContext CreateDbContext(string[] args)
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var dbContextBuilder = new DbContextOptionsBuilder<ArchivatorDbContext>();
+
+            StaticUtilities.SetupDatabase(dbContextBuilder, configuration);
+
+            return new ArchivatorDbContext(dbContextBuilder.Options);
         }
     }
 }

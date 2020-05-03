@@ -124,7 +124,7 @@
     <value>Settings</value>
   </data>
   <data name="SettingsPageAboutText" xml:space="preserve">
-    <value>Settings page placeholder text.  Your app description goes here.</value>
+    <value>Experimental data and document archivation app. Use at your own risk. Author: Lukáš Josai</value>
   </data>
   <data name="SettingsPageAboutTitle" xml:space="preserve">
     <value>About this application</value>
