@@ -132,66 +132,47 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             }
         }
 
-        public void PrintFile(FileEntity fileToPrint)
+        public void PrintSelected()
         {
-            var converter = new DbObjectToQRCodeConverter();
-            var image = (byte[]) converter.Convert(fileToPrint, null, null, null);
-
-            PrintDialog dialog = new PrintDialog();
-            if (dialog.ShowDialog() != true) return;
-
-            Size pageSize = new Size(230, 230);
-
-            var flowDoc = new FlowDocument
-            {
-                PageWidth = pageSize.Width,
-                PageHeight = pageSize.Height,
-                PagePadding = new Thickness(3)
-            };
-            flowDoc.Blocks.Add(new Paragraph(new Run("F - " + fileToPrint.Id + "\n" + fileToPrint.FileName))
-            {
-                FontSize = 19
-            });
-            flowDoc.Blocks.Add(new BlockUIContainer(new Image()
-            {
-                Source = LoadImage(image),
-                Height = 160,
-                Width = 160,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(-10, -20, 0, 0),
-                ClipToBounds = true
-            }));
-
-            IDocumentPaginatorSource idpSource = flowDoc;
-
-            dialog.PrintDocument(idpSource.DocumentPaginator, "");
+            PrintObject(Selected);
         }
 
-        /// <summary>
-        /// Prints currently selected item
-        /// </summary>
-        public void PrintItem()
+        public void PrintObject(object objectToPrint)
         {
             var converter = new DbObjectToQRCodeConverter();
-            var image = (byte[]) converter.Convert(Selected, null, null, null);
+            var image = (byte[]) converter.Convert(objectToPrint, null, null, null);
 
+            switch (objectToPrint)
+            {
+                case Item item:
+                    UniversalPrint(item.Id, item.Name, 'I', image);
+                    break;
+                case FileEntity fileEntity:
+                    UniversalPrint(fileEntity.Id, fileEntity.FileName, 'F', image);
+                    break;
+                default:
+                    throw new Exception("Unknown type passed to printObject, did you add another allowed type to DbObjectToQRCodeConverter?");
+            }
+        }
+
+        private void UniversalPrint(int id, string name, char type, byte[] qrCode)
+        {
             PrintDialog dialog = new PrintDialog();
             if (dialog.ShowDialog() != true) return;
 
             var flowDoc = new FlowDocument
             {
                 PageWidth = dialog.PrintableAreaWidth,
-                PageHeight = dialog.PrintableAreaHeight,
-                PagePadding = new Thickness(15, 10, 0, 0)
+                PageHeight = dialog.PrintableAreaHeight + 100,
+                PagePadding = new Thickness(15, 20, 0, 0)
             };
-            flowDoc.Blocks.Add(new Paragraph(new Run("I - " + Selected.Id + "\n" + Selected.Name))
+            flowDoc.Blocks.Add(new Paragraph(new Run(type + " - " + id + "\n" + name))
             {
                 FontSize = 19
             });
             flowDoc.Blocks.Add(new BlockUIContainer(new Image()
             {
-                Source = LoadImage(image),
+                Source = qrCode.LoadImage(),
                 Height = 160,
                 Width = 160,
                 HorizontalAlignment = HorizontalAlignment.Left,
@@ -201,26 +182,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             }));
 
             IDocumentPaginatorSource idpSource = flowDoc;
-
             dialog.PrintDocument(idpSource.DocumentPaginator, "");
-        }
-
-        private static BitmapImage LoadImage(byte[] imageData)
-        {
-            if (imageData == null || imageData.Length == 0) return null;
-            var image = new BitmapImage();
-            using (var mem = new MemoryStream(imageData))
-            {
-                mem.Position = 0;
-                image.BeginInit();
-                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.UriSource = null;
-                image.StreamSource = mem;
-                image.EndInit();
-            }
-            image.Freeze();
-            return image;
         }
     }
 }
