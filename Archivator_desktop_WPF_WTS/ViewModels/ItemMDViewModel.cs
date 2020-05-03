@@ -179,12 +179,10 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             PrintDialog dialog = new PrintDialog();
             if (dialog.ShowDialog() != true) return;
 
-            Size pageSize = new Size(dialog.PrintableAreaWidth, dialog.PrintableAreaHeight);
-
             var flowDoc = new FlowDocument
             {
-                PageWidth = pageSize.Width,
-                PageHeight = pageSize.Height,
+                PageWidth = dialog.PrintableAreaWidth,
+                PageHeight = dialog.PrintableAreaHeight,
                 PagePadding = new Thickness(15, 10, 0, 0)
             };
             flowDoc.Blocks.Add(new Paragraph(new Run("I - " + Selected.Id + "\n" + Selected.Name))
