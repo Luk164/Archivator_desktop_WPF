@@ -4,15 +4,16 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media.Imaging;
 using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
-using Archivator_desktop_WPF_WTS.Core.Contracts.Services;
-using Archivator_desktop_WPF_WTS.Core.Models;
+using Archivator_desktop_WPF_WTS.Converters;
 using Archivator_desktop_WPF_WTS.Helpers;
 using Archivator_desktop_WPF_WTS.Models;
 using ArchivatorDb;
 using ArchivatorDb.Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
@@ -129,6 +130,63 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                 MessageBox.Show("ERROR: A following exception has occured!: " + e.Message, "Unexpected exception",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        /// <summary>
+        /// Prints currently selected item
+        /// </summary>
+        public void Print()
+        {
+            var converter = new DbObjectToQRCodeConverter();
+            var image = (byte[]) converter.Convert(Selected, null, null, null);
+
+            PrintDialog dialog = new PrintDialog();
+            if (dialog.ShowDialog() != true) return;
+
+            Size pageSize = new Size(230, 230);
+
+            var flowDoc = new FlowDocument
+            {
+                PageWidth = pageSize.Width,
+                PageHeight = pageSize.Height,
+                PagePadding = new Thickness(3)
+            };
+            flowDoc.Blocks.Add(new Paragraph(new Run("I - " + Selected.Id + "\n" + Selected.Name))
+            {
+                FontSize = 19
+            });
+            flowDoc.Blocks.Add(new BlockUIContainer(new Image()
+            {
+                Source = LoadImage(image),
+                Height = 160,
+                Width = 160,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(-10, -20, 0, 0),
+                ClipToBounds = true
+            }));
+
+            IDocumentPaginatorSource idpSource = flowDoc;
+
+            dialog.PrintDocument(idpSource.DocumentPaginator, "");
+        }
+
+        private static BitmapImage LoadImage(byte[] imageData)
+        {
+            if (imageData == null || imageData.Length == 0) return null;
+            var image = new BitmapImage();
+            using (var mem = new MemoryStream(imageData))
+            {
+                mem.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = mem;
+                image.EndInit();
+            }
+            image.Freeze();
+            return image;
         }
     }
 }

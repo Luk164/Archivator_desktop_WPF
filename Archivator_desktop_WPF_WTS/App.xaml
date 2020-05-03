@@ -24,6 +24,7 @@
             <converters:DataToHRStringConverter x:Key="DataConverter" />
             <converters:FileNameToTypeConverter x:Key="NameToTypeConverter" />
             <converters:TagListToStringConverter x:Key="TagListToStringConverter"/>
+            <converters:DbObjectToQRCodeConverter x:Key="DbObjectToQrCodeConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
