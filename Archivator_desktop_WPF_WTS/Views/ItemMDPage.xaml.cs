@@ -1,17 +1,8 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Drawing.Printing;
-using System.IO;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
-using Archivator_desktop_WPF_WTS.Converters;
 using Archivator_desktop_WPF_WTS.ViewModels;
-using MahApps.Metro.Controls;
-using FontStyle = System.Windows.FontStyle;
-using Image = System.Windows.Controls.Image;
+using ArchivatorDb.Entities;
 
 namespace Archivator_desktop_WPF_WTS.Views
 {
@@ -21,7 +12,6 @@ namespace Archivator_desktop_WPF_WTS.Views
         {
             InitializeComponent();
             DataContext = viewModel;
-            //dg_test.ItemsSource = viewModel.Selected.Files;
         }
 
         private void bt_edit(object sender, RoutedEventArgs e)
@@ -41,7 +31,14 @@ namespace Archivator_desktop_WPF_WTS.Views
 
         private void bt_print(object sender, RoutedEventArgs e)
         {
-            ((ItemMDViewModel) DataContext).Print();
+            ((ItemMDViewModel) DataContext).PrintItem();
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            var file = (FileEntity)((Button) sender).DataContext;
+
+            ((ItemMDViewModel) DataContext).PrintFile(file);
         }
     }
 }

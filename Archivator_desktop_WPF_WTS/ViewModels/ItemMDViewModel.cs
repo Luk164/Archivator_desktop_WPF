@@ -132,13 +132,10 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             }
         }
 
-        /// <summary>
-        /// Prints currently selected item
-        /// </summary>
-        public void Print()
+        public void PrintFile(FileEntity fileToPrint)
         {
             var converter = new DbObjectToQRCodeConverter();
-            var image = (byte[]) converter.Convert(Selected, null, null, null);
+            var image = (byte[]) converter.Convert(fileToPrint, null, null, null);
 
             PrintDialog dialog = new PrintDialog();
             if (dialog.ShowDialog() != true) return;
@@ -150,6 +147,45 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                 PageWidth = pageSize.Width,
                 PageHeight = pageSize.Height,
                 PagePadding = new Thickness(3)
+            };
+            flowDoc.Blocks.Add(new Paragraph(new Run("F - " + fileToPrint.Id + "\n" + fileToPrint.FileName))
+            {
+                FontSize = 19
+            });
+            flowDoc.Blocks.Add(new BlockUIContainer(new Image()
+            {
+                Source = LoadImage(image),
+                Height = 160,
+                Width = 160,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(-10, -20, 0, 0),
+                ClipToBounds = true
+            }));
+
+            IDocumentPaginatorSource idpSource = flowDoc;
+
+            dialog.PrintDocument(idpSource.DocumentPaginator, "");
+        }
+
+        /// <summary>
+        /// Prints currently selected item
+        /// </summary>
+        public void PrintItem()
+        {
+            var converter = new DbObjectToQRCodeConverter();
+            var image = (byte[]) converter.Convert(Selected, null, null, null);
+
+            PrintDialog dialog = new PrintDialog();
+            if (dialog.ShowDialog() != true) return;
+
+            Size pageSize = new Size(dialog.PrintableAreaWidth, dialog.PrintableAreaHeight);
+
+            var flowDoc = new FlowDocument
+            {
+                PageWidth = pageSize.Width,
+                PageHeight = pageSize.Height,
+                PagePadding = new Thickness(15, 10, 0, 0)
             };
             flowDoc.Blocks.Add(new Paragraph(new Run("I - " + Selected.Id + "\n" + Selected.Name))
             {
