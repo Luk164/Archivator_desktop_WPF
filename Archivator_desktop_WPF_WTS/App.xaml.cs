@@ -29,25 +29,27 @@ namespace Archivator_desktop_WPF_WTS
         private IConfiguration _configuration;
         private readonly DbContextOptionsBuilder<ArchivatorDbContext> _builder = new DbContextOptionsBuilder<ArchivatorDbContext>();
 
-        public App()
-        {
-        }
-
         private async void OnStartup(object sender, StartupEventArgs e)
         {
-            var appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            try
+            {
+                var appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
 
-            // For more information about .NET generic host see  https://docs.microsoft.com/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-3.0
-            _host = Host.CreateDefaultBuilder(e.Args)
+                // For more information about .NET generic host see  https://docs.microsoft.com/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-3.0
+                _host = Host.CreateDefaultBuilder(e.Args)
                     .ConfigureAppConfiguration(c => c.SetBasePath(appLocation))
                     .ConfigureServices(ConfigureServices)
                     .Build();
 
-            MessageBox.Show(_configuration.GetSection(StaticUtilities.CONN_STRING_KEY).Value, "Starting migration");
-            InitDatabase(); //Ensures database is migrated
-            MessageBox.Show("Hope there were no errors", "Finished migration migration");
+                InitDatabase(); //Ensures database is migrated
 
-            await _host.StartAsync();
+                await _host.StartAsync();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("ERROR: An unhandled exception has occured! " + exception.Message , "FATAL ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
         }
 
         private void InitDatabase()
@@ -138,6 +140,9 @@ namespace Archivator_desktop_WPF_WTS
         }
     }
 
+    /// <summary>
+    /// Allows Entity Framework to find and migrate DbContext. Only used at design time!
+    /// </summary>
     public class DbContextFactory : IDesignTimeDbContextFactory<ArchivatorDbContext>
     {
         public ArchivatorDbContext CreateDbContext(string[] args)

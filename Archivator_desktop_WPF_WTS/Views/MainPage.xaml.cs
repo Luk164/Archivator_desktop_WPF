@@ -148,7 +148,6 @@ namespace Archivator_desktop_WPF_WTS.Views
                 //bt_submit.Measure(pageSize);
                 dialog.PrintVisual(dg_files, "Report");
             }
-            //dialog.PrintVisual(bt_submit, "");
         }
     }
 }
