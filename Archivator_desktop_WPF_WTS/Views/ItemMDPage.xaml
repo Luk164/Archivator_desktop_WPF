@@ -81,6 +81,17 @@
                                     <DataGridTextColumn Header="FileName" Binding="{Binding FileName, UpdateSourceTrigger=PropertyChanged}"/>
                                     <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
                                     <DataGridTextColumn Header="Size" Binding="{Binding Data.Length, Converter={StaticResource DataConverter}, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" />
+                                    <DataGridTemplateColumn Header="QRcode">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="&#xE749;"
+                                                        Click="ButtonBase_OnClick"
+                                                        Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
+                                                        FontFamily="Segoe MDL2 Assets"
+                                                        FontSize="20"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                             <Label Content="Events" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
