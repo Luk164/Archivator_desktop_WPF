@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -10,6 +14,9 @@ using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.ViewModels;
 using ArchivatorDb.Entities;
 using Microsoft.Win32;
+using Xceed.Wpf.Toolkit;
+using Xceed.Wpf.Toolkit.Primitives;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Archivator_desktop_WPF_WTS.Views
 {
@@ -124,16 +131,6 @@ namespace Archivator_desktop_WPF_WTS.Views
             return results;
         }
 
-        private void Tag_checked(object sender, RoutedEventArgs e)
-        {
-            _viewModel.AddTag((int) ((CheckBox)sender).Tag);
-        }
-
-        private void Tag_unchecked(object sender, RoutedEventArgs e)
-        {
-            _viewModel.RemoveTag((int) ((CheckBox)sender).Tag);
-        }
-
         /// <summary>
         /// WIP printing system
         /// </summary>
@@ -148,6 +145,27 @@ namespace Archivator_desktop_WPF_WTS.Views
                 //bt_submit.Measure(pageSize);
                 dialog.PrintVisual(dg_files, "Report");
             }
+        }
+
+        private void Selector_OnItemSelectionChanged(object sender, ItemSelectionChangedEventArgs e)
+        {
+            //var listOfSelectedTags = ((CheckComboBox)sender).SelectedItems.Cast<Tag>().ToList();
+
+            //var test = (ObservableCollection<object>) ((CheckComboBox)sender).SelectedItems;
+
+            if (!(((CheckComboBox)sender).DataContext is EventEntity eventEntity))
+            {
+                return;
+            }
+
+            ((CheckComboBox) sender).SelectedItemsOverride = eventEntity.SelectedTags; //should fix some bugs
+
+            _viewModel.SyncEventWithTags(eventEntity, eventEntity.SelectedTags.ToList());
+        }
+
+        private void DataGrid_OnAddingEvent(object? sender, AddingNewItemEventArgs e)
+        {
+            e.NewItem = _viewModel.GetNewEventEntity();
         }
     }
 }
