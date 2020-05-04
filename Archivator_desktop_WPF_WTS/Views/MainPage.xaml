@@ -6,6 +6,8 @@
     xmlns:strings="clr-namespace:Archivator_desktop_WPF_WTS.Strings"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:viewModels="clr-namespace:Archivator_desktop_WPF_WTS.ViewModels"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:entities="clr-namespace:ArchivatorDb.Entities;assembly=ArchivatorDb"
     x:Class="Archivator_desktop_WPF_WTS.Views.MainPage"
     Style="{DynamicResource MahApps.Styles.Page}"
     mc:Ignorable="d"
@@ -56,23 +58,27 @@
                     <ProgressBar x:Name="progress_bar" HorizontalAlignment="Stretch" Height="13" Margin="10,5,10,0" VerticalAlignment="Top"/>
                 </DockPanel>
                 <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" DockPanel.Dock="Bottom" x:Name="bt_submit" Click="Bt_submit_OnClick" Content="&#xE74E;" FontFamily="Segoe MDL2 Assets" Margin="0,0,10,10" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="24"/>
-                <DataGrid DockPanel.Dock="Bottom" mah:DataGridHelper.EnableCellEditAssist="True" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" HorizontalScrollBarVisibility="Auto" ItemsSource="{Binding CurrItem.Events, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False" VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserAddRows="True" AllowDrop="False" AutomationProperties.Name="Events" Margin="10,10,10,0" VerticalAlignment="Stretch">
+                <DataGrid
+                    DockPanel.Dock="Bottom" mah:DataGridHelper.EnableCellEditAssist="True"
+                    SelectedItem="{Binding SelectedEvent, Mode=TwoWay}"
+                    AddingNewItem="DataGrid_OnAddingEvent"
+                    HorizontalScrollBarVisibility="Auto" ItemsSource="{Binding CurrItem.Events, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False" VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserAddRows="True" AllowDrop="False" AutomationProperties.Name="Events" Margin="10,10,10,0" VerticalAlignment="Stretch">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
                         <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
                         <DataGridTextColumn Header="Date" Binding="{Binding Date, UpdateSourceTrigger=PropertyChanged}" />
                         <DataGridTextColumn Header="AuxDate" Binding="{Binding AuxDate, UpdateSourceTrigger=PropertyChanged}" />
                         <DataGridTextColumn Header="Location" Binding="{Binding Location, UpdateSourceTrigger=PropertyChanged}"/>
-                        <DataGridTemplateColumn Header="Tags" Width="140">
+                        <DataGridTemplateColumn Header="Tags">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Page}}, Mode=OneWay, Path=DataContext.Tags}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <CheckBox Content="{Binding Name}" Unchecked="Tag_unchecked" Checked="Tag_checked" Tag="{Binding Id}"/>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
+                                    <xctk:CheckComboBox
+                                        ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Page}}, Mode=OneWay, Path=DataContext.Tags}"
+                                        d:DataContext="{d:DesignInstance entities:EventEntity}"
+                                        DisplayMemberPath="Name"
+                                        ItemSelectionChanged="Selector_OnItemSelectionChanged"
+                                        SelectedItemsOverride="{Binding SelectedTags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        Foreground="{DynamicResource MahApps.Brushes.Text}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

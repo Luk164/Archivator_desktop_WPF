@@ -31,14 +31,14 @@ namespace Archivator_desktop_WPF_WTS.Views
 
         private void bt_print(object sender, RoutedEventArgs e)
         {
-            ((ItemMDViewModel) DataContext).PrintItem();
+            ((ItemMDViewModel) DataContext).PrintSelected();
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             var file = (FileEntity)((Button) sender).DataContext;
 
-            ((ItemMDViewModel) DataContext).PrintFile(file);
+            ((ItemMDViewModel) DataContext).PrintObject(file);
         }
     }
 }

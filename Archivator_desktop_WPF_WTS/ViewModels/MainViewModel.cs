@@ -25,18 +25,26 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             Tags = _context.Tags.ToList();
         }
 
-        public void AddTag(int TagId)
+        public void SyncEventWithTags(EventEntity Event, List<Tag> listOfSelectedTags)
         {
-            if (SelectedEvent == null) return;
+            //var eventEntity = _context.Events.Find(EventId);
 
-            _context.Add(new Event2Tag(){Tag = _context.Tags.Find(TagId), Event = SelectedEvent});
-        }
+            foreach (var tag in listOfSelectedTags)
+            {
+                //already inside
+                if (Event.Tags.Any(event2Tag => event2Tag.Tag == tag))
+                {
+                    continue;
+                }
 
-        public void RemoveTag(int TagId)
-        {
-            if (SelectedEvent == null) return;
-            _context.Remove(SelectedEvent.Tags.First(tag => tag.TagId == TagId));
-            SelectedEvent.Tags.Remove(SelectedEvent.Tags.First(tag => tag.TagId == TagId));
+                Event.Tags.Add(new Event2Tag(){Event = Event, Tag = tag});
+            }
+
+            //remove all tags that are not supposed to be there
+            foreach (var event2Tag in Event.Tags.ToList().Where(event2Tag => !listOfSelectedTags.Contains(event2Tag.Tag)))
+            {
+                Event.Tags.Remove(event2Tag);
+            }
         }
 
         public void SaveChanges()
@@ -46,16 +54,31 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
         public void OnNavigatedTo(object parameter)
         {
-            if (parameter is EditModel model && model.editedObject is Item item)
+            if (!(parameter is EditModel model) || !(model.editedObject is Item item)) return;
+
+            _context.DisposeAsync();
+            _context = model.context;
+            CurrItem = item;
+
+            foreach (var eventEntity in CurrItem.Events)
             {
-                _context.DisposeAsync();
-                _context = model.context;
-                CurrItem = item;
+                foreach (var event2Tag in eventEntity.Tags)
+                {
+                    eventEntity.SelectedTags.Add(event2Tag.Tag);
+                }
             }
         }
 
         public void OnNavigatedFrom()
         {
+        }
+
+        public EventEntity GetNewEventEntity()
+        {
+            var newEntity = _context.CreateProxy<EventEntity>();
+            _context.Add(newEntity);
+            newEntity.ParenItem = CurrItem;
+            return newEntity;
         }
     }
 }
