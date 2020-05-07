@@ -1,22 +1,24 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using Archivator_desktop_WPF_WTS.Models;
 using Archivator_desktop_WPF_WTS.ViewModels;
-using Microsoft.Extensions.Options;
 
 namespace Archivator_desktop_WPF_WTS.Views
 {
     public partial class SettingsPage : Page
     {
-
-
         public SettingsPage(SettingsViewModel viewModel)
         {
             InitializeComponent();
             DataContext = viewModel;
             //tb_connection_string.Text = viewModel.GetDbConnString();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ((SettingsViewModel)DataContext).ExportDb();
+        }
+
+
 
         // TODO bring back simple connection string change
         //private void Tb_connection_string_OnKeyUp(object sender, KeyEventArgs e)

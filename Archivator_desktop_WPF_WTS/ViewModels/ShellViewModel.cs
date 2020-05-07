@@ -2,11 +2,9 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-
 using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Helpers;
 using Archivator_desktop_WPF_WTS.Strings;
-
 using MahApps.Metro.Controls;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
@@ -35,24 +33,31 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         }
 
         // TODO WTS: Change the icons and titles for all HamburgerMenuItems here.
-        public ObservableCollection<HamburgerMenuItem> MenuItems { get; } = new ObservableCollection<HamburgerMenuItem>()
-        {
-            new HamburgerMenuGlyphItem() { Label = Resources.ShellMainPage, Glyph = "\uECC8", TargetPageType = typeof(MainViewModel) },
-            new HamburgerMenuGlyphItem() { Label = Resources.ShellItemMDPage, Glyph = "\uE71D", TargetPageType = typeof(ItemMDViewModel) },
-            new HamburgerMenuGlyphItem() { Label = Resources.ShellTagsMDPage, Glyph = "\uE8EC", TargetPageType = typeof(TagsViewModel) },
-            //new HamburgerMenuGlyphItem() { Label = Resources.ShellMasterDetail2Page, Glyph = "\uE8A5", TargetPageType = typeof(MasterDetail2ViewModel) },
-        };
+        public ObservableCollection<HamburgerMenuItem> MenuItems { get; } =
+            new ObservableCollection<HamburgerMenuItem>()
+            {
+                new HamburgerMenuGlyphItem()
+                    {Label = Resources.ShellMainPage, Glyph = "\uECC8", TargetPageType = typeof(MainViewModel)},
+                new HamburgerMenuGlyphItem()
+                    {Label = Resources.ShellItemMDPage, Glyph = "\uE71D", TargetPageType = typeof(ItemMDViewModel)},
+                new HamburgerMenuGlyphItem()
+                    {Label = Resources.ShellTagsMDPage, Glyph = "\uE8EC", TargetPageType = typeof(TagsViewModel)},
+                //new HamburgerMenuGlyphItem() { Label = Resources.ShellMasterDetail2Page, Glyph = "\uE8A5", TargetPageType = typeof(MasterDetail2ViewModel) },
+            };
 
-        public ObservableCollection<HamburgerMenuItem> OptionMenuItems { get; } = new ObservableCollection<HamburgerMenuItem>()
-        {
-            new HamburgerMenuGlyphItem() { Label = Resources.ShellSettingsPage, Glyph = "\uE713", TargetPageType = typeof(SettingsViewModel) }
-        };
+        public ObservableCollection<HamburgerMenuItem> OptionMenuItems { get; } =
+            new ObservableCollection<HamburgerMenuItem>()
+            {
+                new HamburgerMenuGlyphItem()
+                    {Label = Resources.ShellSettingsPage, Glyph = "\uE713", TargetPageType = typeof(SettingsViewModel)}
+            };
 
         public RelayCommand GoBackCommand => _goBackCommand ??= new RelayCommand(OnGoBack, CanGoBack);
 
         public ICommand MenuItemInvokedCommand => _menuItemInvokedCommand ??= new RelayCommand(OnMenuItemInvoked);
 
-        public ICommand OptionsMenuItemInvokedCommand => _optionsMenuItemInvokedCommand ??= new RelayCommand(OnOptionsMenuItemInvoked);
+        public ICommand OptionsMenuItemInvokedCommand =>
+            _optionsMenuItemInvokedCommand ??= new RelayCommand(OnOptionsMenuItemInvoked);
 
         public ICommand LoadedCommand => _loadedCommand ??= new RelayCommand(OnLoaded);
 
@@ -96,8 +101,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private void OnNavigated(object sender, string viewModelName)
         {
             var item = MenuItems
-                        .OfType<HamburgerMenuItem>()
-                        .FirstOrDefault(i => viewModelName == i.TargetPageType?.FullName);
+                .OfType<HamburgerMenuItem>()
+                .FirstOrDefault(i => viewModelName == i.TargetPageType?.FullName);
             if (item != null)
             {
                 SelectedMenuItem = item;
@@ -105,8 +110,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             else
             {
                 SelectedOptionsMenuItem = OptionMenuItems
-                        .OfType<HamburgerMenuItem>()
-                        .FirstOrDefault(i => viewModelName == i.TargetPageType?.FullName);
+                    .OfType<HamburgerMenuItem>()
+                    .FirstOrDefault(i => viewModelName == i.TargetPageType?.FullName);
             }
 
             GoBackCommand.OnCanExecuteChanged();

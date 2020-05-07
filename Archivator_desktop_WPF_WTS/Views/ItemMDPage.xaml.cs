@@ -38,7 +38,7 @@ namespace Archivator_desktop_WPF_WTS.Views
         {
             var file = (FileEntity)((Button) sender).DataContext;
 
-            ((ItemMDViewModel) DataContext).PrintObject(file);
+            StaticUtilities.PrintObject(file);
         }
     }
 }

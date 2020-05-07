@@ -13,18 +13,23 @@ namespace Archivator_desktop_WPF_WTS.Views
             DataContext = viewModel;
         }
 
-        private void tb_new_tag_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        private void tb_new_tag_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == System.Windows.Input.Key.Enter)
+            if (e.Key == Key.Enter)
             {
-                (DataContext as TagsViewModel).CreateTag(tb_new_tag.Text);
+                ((TagsViewModel) DataContext).CreateTag(tb_new_tag.Text);
                 MessageBox.Show("Success");
             }
         }
 
         private void SubmitChanges(object sender, KeyEventArgs e)
         {
-            (DataContext as TagsViewModel).SubmitChanges();
+            ((TagsViewModel) DataContext).SubmitChanges();
+        }
+
+        private void bt_delete(object sender, RoutedEventArgs e)
+        {
+            ((TagsViewModel) DataContext).DeleteSelected();
         }
     }
 }

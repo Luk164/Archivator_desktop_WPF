@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media.Imaging;
 using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
-using Archivator_desktop_WPF_WTS.Converters;
 using Archivator_desktop_WPF_WTS.Helpers;
 using Archivator_desktop_WPF_WTS.Models;
 using ArchivatorDb;
@@ -18,6 +13,9 @@ using Microsoft.Win32;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
 {
+    /// <summary>
+    /// View model for Item Master Detail page.
+    /// </summary>
     public class ItemMDViewModel : Observable, INavigationAware
     {
         private Item _selected;
@@ -25,34 +23,51 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private readonly INavigationService _navigationService;
         private FileEntity _selectedFile;
 
+        /// <summary>
+        /// Proxy for accessing selected file object. It cannot be accessed directly.
+        /// </summary>
         public FileEntity SelectedFile
         {
             get => _selectedFile;
             set => Set(ref _selectedFile, value);
         }
 
+        /// <summary>
+        /// Proxy for accessing selected item object. It cannot be accessed directly.
+        /// </summary>
         public Item Selected
         {
             get => _selected;
             set => Set(ref _selected, value);
         }
 
-        public IList<Tag> Tags { get; }
-
+        /// <summary>
+        /// List of items used in GUI
+        /// </summary>
         public ObservableCollection<Item> Items { get; private set; }
 
+        /// <summary>
+        /// Constructor for Item master-detail viewmodel.
+        /// </summary>
+        /// <param name="context">ArchivatorDbContext used to interact with database</param>
+        /// <param name="navigationService">Service allowing navigation between different pages</param>
         public ItemMDViewModel(ArchivatorDbContext context, INavigationService navigationService)
         {
             _context = context;
-            Tags = context.Tags.ToList();
             _navigationService = navigationService;
         }
 
+        /// <summary>
+        /// Navigates to Main page and sets current item as the edited one.
+        /// </summary>
         public void EditSelected()
         {
             _navigationService.NavigateTo(typeof(MainViewModel).FullName, new EditModel(){context = _context, editedObject = Selected});
         }
 
+        /// <summary>
+        /// Deletes currently selected item, then sets it to first item in list or new item is list is empty.
+        /// </summary>
         public void DeleteSelected()
         {
             try
@@ -94,6 +109,9 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
         }
 
+        /// <summary>
+        /// Opens a dialog for saving a file from database to disk.
+        /// </summary>
         public void SaveFile()
         {
             if (_selectedFile == null)
@@ -132,57 +150,12 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             }
         }
 
+        /// <summary>
+        /// Opens a print dialog for currently selected Item.
+        /// </summary>
         public void PrintSelected()
         {
-            PrintObject(Selected);
-        }
-
-        public void PrintObject(object objectToPrint)
-        {
-            var converter = new DbObjectToQRCodeConverter();
-            var image = (byte[]) converter.Convert(objectToPrint, null, null, null);
-
-            switch (objectToPrint)
-            {
-                case Item item:
-                    UniversalPrint(item.Id, item.Name, 'I', image);
-                    break;
-                case FileEntity fileEntity:
-                    UniversalPrint(fileEntity.Id, fileEntity.FileName, 'F', image);
-                    break;
-                default:
-                    throw new Exception("Unknown type passed to printObject, did you add another allowed type to DbObjectToQRCodeConverter?");
-            }
-        }
-
-        private void UniversalPrint(int id, string name, char type, byte[] qrCode)
-        {
-            PrintDialog dialog = new PrintDialog();
-            if (dialog.ShowDialog() != true) return;
-
-            var flowDoc = new FlowDocument
-            {
-                PageWidth = dialog.PrintableAreaWidth,
-                PageHeight = dialog.PrintableAreaHeight + 100,
-                PagePadding = new Thickness(15, 20, 0, 0)
-            };
-            flowDoc.Blocks.Add(new Paragraph(new Run(type + " - " + id + "\n" + name))
-            {
-                FontSize = 19
-            });
-            flowDoc.Blocks.Add(new BlockUIContainer(new Image()
-            {
-                Source = qrCode.LoadImage(),
-                Height = 160,
-                Width = 160,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(-10, -20, 0, 0),
-                ClipToBounds = true
-            }));
-
-            IDocumentPaginatorSource idpSource = flowDoc;
-            dialog.PrintDocument(idpSource.DocumentPaginator, "");
+            StaticUtilities.PrintObject(Selected);
         }
     }
 }
