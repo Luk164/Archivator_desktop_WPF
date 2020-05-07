@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Archivator_desktop_WPF_WTS.Core.Contracts.Services;
+using Archivator_desktop_WPF_WTS.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Archivator_desktop_WPF_WTS.Core.Contracts.Services;
-using Archivator_desktop_WPF_WTS.Core.Models;
 
 namespace Archivator_desktop_WPF_WTS.Core.Services
 {
@@ -19,7 +18,7 @@ namespace Archivator_desktop_WPF_WTS.Core.Services
         private static IEnumerable<SampleOrder> AllOrders()
         {
             // The following is order summary data
-            var companies = AllCompanies();
+            IEnumerable<SampleCompany> companies = AllCompanies();
             return companies.SelectMany(c => c.Orders);
         }
 

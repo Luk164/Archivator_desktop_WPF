@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
+﻿using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;
 using Archivator_desktop_WPF_WTS.Models;
 using ArchivatorDb;
 using ArchivatorDb.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
 {
@@ -54,9 +54,9 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             _context = model.context;
             CurrItem = item;
 
-            foreach (var eventEntity in CurrItem.Events)
+            foreach (EventEntity eventEntity in CurrItem.Events)
             {
-                foreach (var event2Tag in eventEntity.Tags)
+                foreach (Event2Tag event2Tag in eventEntity.Tags)
                 {
                     eventEntity.SelectedTags.Add(event2Tag.Tag);
                 }
@@ -73,7 +73,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// <returns>New tracked entity proxy object</returns>
         public EventEntity GetNewEventEntity()
         {
-            var newEntity = _context.CreateProxy<EventEntity>();
+            EventEntity newEntity = _context.CreateProxy<EventEntity>();
             _context.Add(newEntity);
             newEntity.ParenItem = CurrItem;
             return newEntity;

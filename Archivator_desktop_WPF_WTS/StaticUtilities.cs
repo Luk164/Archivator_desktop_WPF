@@ -1,3 +1,7 @@
+using Archivator_desktop_WPF_WTS.Converters;
+using ArchivatorDb.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -5,16 +9,10 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media.Imaging;
-using Archivator_desktop_WPF_WTS.Converters;
-using ArchivatorDb.Entities;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Archivator_desktop_WPF_WTS
 {
@@ -52,7 +50,7 @@ namespace Archivator_desktop_WPF_WTS
             }
             else
             {
-                foreach (var item in items)
+                foreach (T item in items)
                 {
                     list.Add(item);
                 }
@@ -110,8 +108,8 @@ namespace Archivator_desktop_WPF_WTS
         public static BitmapImage LoadImage(this byte[] imageData)
         {
             if (imageData == null || imageData.Length == 0) return null;
-            var image = new BitmapImage();
-            using (var mem = new MemoryStream(imageData))
+            BitmapImage image = new BitmapImage();
+            using (MemoryStream mem = new MemoryStream(imageData))
             {
                 mem.Position = 0;
                 image.BeginInit();
@@ -133,13 +131,13 @@ namespace Archivator_desktop_WPF_WTS
         public static void SyncEventWithTags(EventEntity Event, List<Tag> listOfSelectedTags)
         {
             //add all required tags that are not already present
-            foreach (var tag in listOfSelectedTags.Where(tag => Event.Tags.All(event2Tag => event2Tag.Tag != tag)))
+            foreach (Tag tag in listOfSelectedTags.Where(tag => Event.Tags.All(event2Tag => event2Tag.Tag != tag)))
             {
-                Event.Tags.Add(new Event2Tag(){Event = Event, Tag = tag});
+                Event.Tags.Add(new Event2Tag() { Event = Event, Tag = tag });
             }
 
             //remove all tags that are not supposed to be there
-            foreach (var event2Tag in Event.Tags.ToList().Where(event2Tag => !listOfSelectedTags.Contains(event2Tag.Tag)))
+            foreach (Event2Tag event2Tag in Event.Tags.ToList().Where(event2Tag => !listOfSelectedTags.Contains(event2Tag.Tag)))
             {
                 Event.Tags.Remove(event2Tag);
             }
@@ -150,7 +148,7 @@ namespace Archivator_desktop_WPF_WTS
             PrintDialog dialog = new PrintDialog();
             if (dialog.ShowDialog() != true) return;
 
-            var flowDoc = new FlowDocument
+            FlowDocument flowDoc = new FlowDocument
             {
                 PageWidth = dialog.PrintableAreaWidth,
                 PageHeight = dialog.PrintableAreaHeight + 100,
@@ -175,15 +173,15 @@ namespace Archivator_desktop_WPF_WTS
             dialog.PrintDocument(idpSource.DocumentPaginator, "");
         }
 
-        
+
         /// <summary>
         /// Prints passed object. Only Item and FileEntity is allowed
         /// </summary>
         /// <param name="objectToPrint">Item or FileEntity to be printed. Throws exception if a different type is passed</param>
         public static void PrintObject(object objectToPrint)
         {
-            var converter = new DbObjectToQRCodeConverter();
-            var image = (byte[]) converter.Convert(objectToPrint, null, null, null);
+            DbObjectToQRCodeConverter converter = new DbObjectToQRCodeConverter();
+            byte[] image = (byte[])converter.Convert(objectToPrint, null, null, null);
 
             switch (objectToPrint)
             {

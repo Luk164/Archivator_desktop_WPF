@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-
-using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
+﻿using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Core.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Core.Models;
 using Archivator_desktop_WPF_WTS.Helpers;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
 {
@@ -34,9 +32,9 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
             SampleItems.Clear();
 
-            var data = await _sampleDataService.GetMasterDetailDataAsync();
+            System.Collections.Generic.IEnumerable<SampleOrder> data = await _sampleDataService.GetMasterDetailDataAsync();
 
-            foreach (var item in data)
+            foreach (SampleOrder item in data)
             {
                 SampleItems.Add(item);
             }

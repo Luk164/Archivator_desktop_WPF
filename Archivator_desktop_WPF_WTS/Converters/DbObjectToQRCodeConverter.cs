@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Windows.Data;
-using ArchivatorDb.Entities;
+﻿using ArchivatorDb.Entities;
 using QRCoder;
+using System;
+using System.Globalization;
+using System.Windows.Data;
 
 namespace Archivator_desktop_WPF_WTS.Converters
 {
@@ -14,7 +11,7 @@ namespace Archivator_desktop_WPF_WTS.Converters
     {
         public object Convert(object DbObject, Type targetType, object parameter, CultureInfo culture)
         {
-            var identifier = DbObject switch
+            string identifier = DbObject switch
             {
                 Item item => "I - " + item.Id,
                 FileEntity fileEntity => "F - " + fileEntity.Id,

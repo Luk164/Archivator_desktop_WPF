@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 
 namespace Archivator_desktop_WPF_WTS.Converters
@@ -11,7 +10,7 @@ namespace Archivator_desktop_WPF_WTS.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value != null ? ToByteSize((int) value) : "ERROR";
+            return value != null ? ToByteSize((int)value) : "ERROR";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -19,7 +18,7 @@ namespace Archivator_desktop_WPF_WTS.Converters
             throw new NotImplementedException(); //No back conversion should ever happen
         }
 
-        private static readonly KeyValuePair<long, string>[] Thresholds = 
+        private static readonly KeyValuePair<long, string>[] Thresholds =
         {
             // new KeyValuePair<long, string>(0, " Bytes"), // Don't devide by Zero!
             new KeyValuePair<long, string>(1, " Byte"),

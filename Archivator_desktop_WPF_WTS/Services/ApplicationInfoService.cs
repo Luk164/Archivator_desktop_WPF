@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Archivator_desktop_WPF_WTS.Contracts.Services;
+using System;
 using System.Reflection;
-using Archivator_desktop_WPF_WTS.Contracts.Services;
-
 using Windows.ApplicationModel;
 
 namespace Archivator_desktop_WPF_WTS.Services
@@ -18,12 +17,12 @@ namespace Archivator_desktop_WPF_WTS.Services
             {
                 if (OSVersionHelper.WindowsVersionHelper.HasPackageIdentity)
                 {
-                    var version = Package.Current.Id.Version;
+                    PackageVersion version = Package.Current.Id.Version;
                     return new Version(version.Major, version.Minor, version.Build, version.Revision);
                 }
                 else
                 {
-                    var v = Assembly.GetExecutingAssembly().GetName().Version;
+                    Version v = Assembly.GetExecutingAssembly().GetName().Version;
                     return new Version(v.Major, v.Minor, v.Build, v.Revision);
                 }
 

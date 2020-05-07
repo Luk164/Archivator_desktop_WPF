@@ -1,9 +1,7 @@
-﻿using System.Windows.Controls;
-
-using Archivator_desktop_WPF_WTS.Contracts.Views;
+﻿using Archivator_desktop_WPF_WTS.Contracts.Views;
 using Archivator_desktop_WPF_WTS.ViewModels;
-
 using MahApps.Metro.Controls;
+using System.Windows.Controls;
 
 namespace Archivator_desktop_WPF_WTS.Views
 {

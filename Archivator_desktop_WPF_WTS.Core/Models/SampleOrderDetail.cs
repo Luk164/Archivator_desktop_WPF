@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Archivator_desktop_WPF_WTS.Core.Models
+﻿namespace Archivator_desktop_WPF_WTS.Core.Models
 {
     // TODO WTS: Remove this class once your pages/features are using your data.
     // This is used by the SampleDataService.

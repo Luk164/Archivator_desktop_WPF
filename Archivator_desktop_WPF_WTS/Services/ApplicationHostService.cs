@@ -1,12 +1,10 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Archivator_desktop_WPF_WTS.Contracts.Services;
+﻿using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.Views;
 using Archivator_desktop_WPF_WTS.ViewModels;
-
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Archivator_desktop_WPF_WTS.Services
 {

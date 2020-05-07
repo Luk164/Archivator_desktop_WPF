@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.IO;
-
-using Archivator_desktop_WPF_WTS.Contracts.Services;
+﻿using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Core.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Models;
-
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections;
+using System.IO;
 
 namespace Archivator_desktop_WPF_WTS.Services
 {
@@ -26,17 +24,17 @@ namespace Archivator_desktop_WPF_WTS.Services
         {
             if (App.Current.Properties != null)
             {
-                var folderPath = Path.Combine(_localAppData, _config.ConfigurationsFolder);
-                var fileName = _config.AppPropertiesFileName;
+                string folderPath = Path.Combine(_localAppData, _config.ConfigurationsFolder);
+                string fileName = _config.AppPropertiesFileName;
                 _fileService.Save(folderPath, fileName, App.Current.Properties);
             }
         }
 
         public void RestoreData()
         {
-            var folderPath = Path.Combine(_localAppData, _config.ConfigurationsFolder);
-            var fileName = _config.AppPropertiesFileName;
-            var properties = _fileService.Read<IDictionary>(folderPath, fileName);
+            string folderPath = Path.Combine(_localAppData, _config.ConfigurationsFolder);
+            string fileName = _config.AppPropertiesFileName;
+            IDictionary properties = _fileService.Read<IDictionary>(folderPath, fileName);
             if (properties != null)
             {
                 foreach (DictionaryEntry property in properties)

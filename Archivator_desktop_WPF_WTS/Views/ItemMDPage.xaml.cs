@@ -1,8 +1,8 @@
-﻿using System.Windows;
+﻿using Archivator_desktop_WPF_WTS.ViewModels;
+using ArchivatorDb.Entities;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Archivator_desktop_WPF_WTS.ViewModels;
-using ArchivatorDb.Entities;
 
 namespace Archivator_desktop_WPF_WTS.Views
 {
@@ -16,27 +16,27 @@ namespace Archivator_desktop_WPF_WTS.Views
 
         private void bt_edit(object sender, RoutedEventArgs e)
         {
-            ((ItemMDViewModel) DataContext).EditSelected();
+            ((ItemMDViewModel)DataContext).EditSelected();
         }
 
         private void bt_delete(object sender, RoutedEventArgs e)
         {
-            ((ItemMDViewModel) DataContext).DeleteSelected();
+            ((ItemMDViewModel)DataContext).DeleteSelected();
         }
 
         private void Control_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ((ItemMDViewModel) DataContext).SaveFile();
+            ((ItemMDViewModel)DataContext).SaveFile();
         }
 
         private void bt_print(object sender, RoutedEventArgs e)
         {
-            ((ItemMDViewModel) DataContext).PrintSelected();
+            ((ItemMDViewModel)DataContext).PrintSelected();
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            var file = (FileEntity)((Button) sender).DataContext;
+            FileEntity file = (FileEntity)((Button)sender).DataContext;
 
             StaticUtilities.PrintObject(file);
         }

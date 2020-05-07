@@ -1,7 +1,7 @@
-﻿using System.Windows;
+﻿using Archivator_desktop_WPF_WTS.ViewModels;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Archivator_desktop_WPF_WTS.ViewModels;
 
 namespace Archivator_desktop_WPF_WTS.Views
 {
@@ -17,19 +17,19 @@ namespace Archivator_desktop_WPF_WTS.Views
         {
             if (e.Key == Key.Enter)
             {
-                ((TagsViewModel) DataContext).CreateTag(tb_new_tag.Text);
+                ((TagsViewModel)DataContext).CreateTag(tb_new_tag.Text);
                 MessageBox.Show("Success");
             }
         }
 
         private void SubmitChanges(object sender, KeyEventArgs e)
         {
-            ((TagsViewModel) DataContext).SubmitChanges();
+            ((TagsViewModel)DataContext).SubmitChanges();
         }
 
         private void bt_delete(object sender, RoutedEventArgs e)
         {
-            ((TagsViewModel) DataContext).DeleteSelected();
+            ((TagsViewModel)DataContext).DeleteSelected();
         }
     }
 }

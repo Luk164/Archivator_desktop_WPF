@@ -1,10 +1,9 @@
-﻿using System;
+﻿using ArchivatorDb.Entities;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows.Data;
-using ArchivatorDb.Entities;
 
 namespace Archivator_desktop_WPF_WTS.Converters
 {
@@ -15,7 +14,7 @@ namespace Archivator_desktop_WPF_WTS.Converters
         {
             try
             {
-                return string.Join(";", ((List<Event2Tag>) value ?? throw new InvalidOperationException()).Select(i => i.Tag.Name).ToArray());
+                return string.Join(";", ((List<Event2Tag>)value ?? throw new InvalidOperationException()).Select(i => i.Tag.Name).ToArray());
             }
             catch (Exception e)
             {

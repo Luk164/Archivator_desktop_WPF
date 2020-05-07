@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using Archivator_desktop_WPF_WTS.Contracts.Services;
+using Archivator_desktop_WPF_WTS.ViewModels;
+using ArchivatorDb.Entities;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -10,10 +11,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using Archivator_desktop_WPF_WTS.Contracts.Services;
-using Archivator_desktop_WPF_WTS.ViewModels;
-using ArchivatorDb.Entities;
-using Microsoft.Win32;
 using Xceed.Wpf.Toolkit;
 using Xceed.Wpf.Toolkit.Primitives;
 using MessageBox = System.Windows.MessageBox;
@@ -49,7 +46,7 @@ namespace Archivator_desktop_WPF_WTS.Views
         /// </summary>
         private void InitOpenFileDialog()
         {
-            fileDialog = new OpenFileDialog {InitialDirectory = "c:\\", Multiselect = true, Title = "File selector"};
+            fileDialog = new OpenFileDialog { InitialDirectory = "c:\\", Multiselect = true, Title = "File selector" };
         }
 
         /// <summary>
@@ -59,11 +56,11 @@ namespace Archivator_desktop_WPF_WTS.Views
         /// <param name="e">Extra arguments</param>
         private async void btn_add_file_Click(object sender, RoutedEventArgs e)
         {
-            bt_submit.IsEnabled=false;
+            bt_submit.IsEnabled = false;
             _viewModel.CurrItem.Files.AddRange(await MakeFileEntityListAsync());
             dg_files.Items.Refresh();
             progress_bar.Dispatcher.Invoke(() => progress_bar.Value = 100);
-            bt_submit.IsEnabled=true;
+            bt_submit.IsEnabled = true;
         }
 
         /// <summary>
@@ -101,7 +98,7 @@ namespace Archivator_desktop_WPF_WTS.Views
             if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
 
             // Note that you can have more than one file.
-            var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             _viewModel.CurrItem.Files.AddRange(await makeFileEntitiesFromPathListAsync(files));
             dg_files.Items.Refresh();
         }
@@ -113,28 +110,29 @@ namespace Archivator_desktop_WPF_WTS.Views
         /// <returns></returns>
         private async Task<List<FileEntity>> makeFileEntitiesFromPathListAsync(IEnumerable<string> pathList)
         {
-            var filePaths = pathList.ToList();
+            List<string> filePaths = pathList.ToList();
             if (!filePaths.Any())
             {
                 return new List<FileEntity>();
             }
 
-            var tasks = new List<Task<FileEntity>>();
-            int percentage = 100/filePaths.Count;
+            List<Task<FileEntity>> tasks = new List<Task<FileEntity>>();
+            int percentage = 100 / filePaths.Count;
             progress_bar.Dispatcher.Invoke(() => progress_bar.Value = 0);
 
-            foreach (var filePath in filePaths)
+            foreach (string filePath in filePaths)
             {
-                var fileInfo = new FileInfo(filePath);
+                FileInfo fileInfo = new FileInfo(filePath);
                 if (fileInfo.Length > StaticUtilities.MAX_FILE_SIZE)
                 {
                     MessageBox.Show($"File \"{System.IO.Path.GetFileName(filePath)}\" skipped because it was too large. Maximum allowed size is 25MB.\nThis file is {(fileInfo.Length - StaticUtilities.MAX_FILE_SIZE)} bytes over this limit.");
                 }
-                tasks.Add(Task.Run(() => {
-                    var newFileEntity = new FileEntity()
+                tasks.Add(Task.Run(() =>
+                {
+                    FileEntity newFileEntity = new FileEntity()
                     {
                         FileName = System.IO.Path.GetFileName(filePath),
-                        Data=File.ReadAllBytes(filePath)
+                        Data = File.ReadAllBytes(filePath)
                     };
 
                     progress_bar.Dispatcher.Invoke(() =>
@@ -148,11 +146,11 @@ namespace Archivator_desktop_WPF_WTS.Views
                             progress_bar.Value += percentage;
                         }
                     }, DispatcherPriority.Render);
-                    
+
                     return newFileEntity;
                 }, cancellationTokenSource.Token));
             }
-            var results = new List<FileEntity>(await Task.WhenAll(tasks));
+            List<FileEntity> results = new List<FileEntity>(await Task.WhenAll(tasks));
             progress_bar.Dispatcher.Invoke(() => progress_bar.Value = 0);
             return results;
         }
@@ -184,7 +182,7 @@ namespace Archivator_desktop_WPF_WTS.Views
                 return;
             }
 
-            ((CheckComboBox) sender).SelectedItemsOverride = eventEntity.SelectedTags; //should fix some bugs
+            ((CheckComboBox)sender).SelectedItemsOverride = eventEntity.SelectedTags; //should fix some bugs
 
             StaticUtilities.SyncEventWithTags(eventEntity, eventEntity.SelectedTags.ToList());
         }

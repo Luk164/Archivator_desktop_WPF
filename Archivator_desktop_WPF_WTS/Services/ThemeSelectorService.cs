@@ -1,12 +1,9 @@
-﻿using System;
-using System.Windows;
-
-using Archivator_desktop_WPF_WTS.Contracts.Services;
+﻿using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Models;
-
 using MahApps.Metro;
-
 using Microsoft.Win32;
+using System;
+using System.Windows;
 
 namespace Archivator_desktop_WPF_WTS.Services
 {
@@ -32,7 +29,7 @@ namespace Archivator_desktop_WPF_WTS.Services
                 if (App.Current.Properties.Contains("Theme"))
                 {
                     // Saved theme
-                    var themeName = App.Current.Properties["Theme"].ToString();
+                    string themeName = App.Current.Properties["Theme"].ToString();
                     theme = (AppTheme)Enum.Parse(typeof(AppTheme), themeName);
                 }
                 else
@@ -42,7 +39,7 @@ namespace Archivator_desktop_WPF_WTS.Services
                 }
             }
 
-            var currentTheme = ThemeManager.DetectTheme(Application.Current);
+            Theme currentTheme = ThemeManager.DetectTheme(Application.Current);
             if (currentTheme == null || currentTheme.Name != theme.ToString())
             {
                 ThemeManager.ChangeTheme(Application.Current, $"{theme}.Blue");
@@ -55,7 +52,7 @@ namespace Archivator_desktop_WPF_WTS.Services
 
         public AppTheme GetCurrentTheme()
         {
-            var themeName = App.Current.Properties["Theme"]?.ToString();
+            string themeName = App.Current.Properties["Theme"]?.ToString();
             Enum.TryParse(themeName, out AppTheme theme);
             return theme;
         }

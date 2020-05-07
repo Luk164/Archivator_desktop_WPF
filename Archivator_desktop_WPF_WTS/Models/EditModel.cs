@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ArchivatorDb;
-using ArchivatorDb.Entities;
+﻿using ArchivatorDb;
 
 namespace Archivator_desktop_WPF_WTS.Models
 {

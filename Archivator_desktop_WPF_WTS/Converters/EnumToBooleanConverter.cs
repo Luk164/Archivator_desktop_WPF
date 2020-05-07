@@ -14,7 +14,7 @@ namespace Archivator_desktop_WPF_WTS.Converters
             {
                 if (Enum.IsDefined(EnumType, value))
                 {
-                    var enumValue = Enum.Parse(EnumType, enumString);
+                    object enumValue = Enum.Parse(EnumType, enumString);
 
                     return enumValue.Equals(value);
                 }

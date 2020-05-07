@@ -1,10 +1,9 @@
-﻿using System;
-using System.Windows.Controls;
-using System.Windows.Navigation;
-
-using Archivator_desktop_WPF_WTS.Contracts.Services;
+﻿using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;
+using System;
+using System.Windows.Controls;
+using System.Windows.Navigation;
 
 namespace Archivator_desktop_WPF_WTS.Services
 {
@@ -43,17 +42,17 @@ namespace Archivator_desktop_WPF_WTS.Services
 
         public bool NavigateTo(string pageKey, object parameter = null, bool clearNavigation = false)
         {
-            var pageType = _pageService.GetPageType(pageKey);
+            Type pageType = _pageService.GetPageType(pageKey);
 
             if (_frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameterUsed)))
             {
                 _frame.Tag = clearNavigation;
-                var page = _pageService.GetPage(pageKey);
-                var navigated = _frame.Navigate(page, parameter);
+                Page page = _pageService.GetPage(pageKey);
+                bool navigated = _frame.Navigate(page, parameter);
                 if (navigated)
                 {
                     _lastParameterUsed = parameter;
-                    var dataContext = _frame.GetDataContext();
+                    object dataContext = _frame.GetDataContext();
                     if (dataContext is INavigationAware navigationAware)
                     {
                         navigationAware.OnNavigatedFrom();
@@ -79,7 +78,7 @@ namespace Archivator_desktop_WPF_WTS.Services
                     frame.CleanNavigation();
                 }
 
-                var dataContext = frame.GetDataContext();
+                object dataContext = frame.GetDataContext();
                 if (dataContext is INavigationAware navigationAware)
                 {
                     navigationAware.OnNavigatedTo(e.ExtraData);

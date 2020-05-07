@@ -1,9 +1,3 @@
-using System;
-using System.IO;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Threading;
-
 using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.Views;
 using Archivator_desktop_WPF_WTS.Core.Contracts.Services;
@@ -18,6 +12,11 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Threading;
 using NavigationService = Archivator_desktop_WPF_WTS.Services.NavigationService;
 
 namespace Archivator_desktop_WPF_WTS
@@ -33,7 +32,7 @@ namespace Archivator_desktop_WPF_WTS
         {
             try
             {
-                var appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
+                string appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
 
                 // For more information about .NET generic host see  https://docs.microsoft.com/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-3.0
                 _host = Host.CreateDefaultBuilder(e.Args)
@@ -47,7 +46,7 @@ namespace Archivator_desktop_WPF_WTS
             }
             catch (Exception exception)
             {
-                MessageBox.Show("ERROR: An unhandled exception has occured! " + exception.Message , "FATAL ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("ERROR: An unhandled exception has occured! " + exception.Message, "FATAL ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
             }
         }
@@ -56,16 +55,16 @@ namespace Archivator_desktop_WPF_WTS
         {
             try
             {
-                var dbContext = new ArchivatorDbContext(_builder.Options);
+                ArchivatorDbContext dbContext = new ArchivatorDbContext(_builder.Options);
                 dbContext.Database.Migrate();
             }
             catch (Exception e)
             {
-                var result = MessageBox.Show("An error occured while trying to migrate database: " + e.Message + " please check connection string. If you do not already have SQL Express installed, click yes to install it.", "Exception Occured",
+                MessageBoxResult result = MessageBox.Show("An error occured while trying to migrate database: " + e.Message + " please check connection string. If you do not already have SQL Express installed, click yes to install it.", "Exception Occured",
                     MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                 // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault MessageBox return only Yes or No
-                switch(result)
+                switch (result)
                 {
                     case MessageBoxResult.Yes:
                         System.Diagnostics.Process.Start("~\\SQL2019-SSEI-Expr.exe");
@@ -147,12 +146,12 @@ namespace Archivator_desktop_WPF_WTS
     {
         public ArchivatorDbContext CreateDbContext(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            var dbContextBuilder = new DbContextOptionsBuilder<ArchivatorDbContext>();
+            DbContextOptionsBuilder<ArchivatorDbContext> dbContextBuilder = new DbContextOptionsBuilder<ArchivatorDbContext>();
 
             StaticUtilities.SetupDatabase(dbContextBuilder, configuration);
 

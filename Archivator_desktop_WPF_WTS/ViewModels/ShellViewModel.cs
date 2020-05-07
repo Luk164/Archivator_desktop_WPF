@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Input;
-using Archivator_desktop_WPF_WTS.Contracts.Services;
+﻿using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Helpers;
 using Archivator_desktop_WPF_WTS.Strings;
 using MahApps.Metro.Controls;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Input;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
 {
@@ -100,7 +100,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
         private void OnNavigated(object sender, string viewModelName)
         {
-            var item = MenuItems
+            HamburgerMenuItem item = MenuItems
                 .OfType<HamburgerMenuItem>()
                 .FirstOrDefault(i => viewModelName == i.TargetPageType?.FullName);
             if (item != null)

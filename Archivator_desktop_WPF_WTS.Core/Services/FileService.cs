@@ -1,9 +1,7 @@
-﻿using System.IO;
-using System.Text;
-
-using Archivator_desktop_WPF_WTS.Core.Contracts.Services;
-
+﻿using Archivator_desktop_WPF_WTS.Core.Contracts.Services;
 using Newtonsoft.Json;
+using System.IO;
+using System.Text;
 
 namespace Archivator_desktop_WPF_WTS.Core.Services
 {
@@ -11,10 +9,10 @@ namespace Archivator_desktop_WPF_WTS.Core.Services
     {
         public T Read<T>(string folderPath, string fileName)
         {
-            var path = Path.Combine(folderPath, fileName);
+            string path = Path.Combine(folderPath, fileName);
             if (File.Exists(path))
             {
-                var json = File.ReadAllText(path);
+                string json = File.ReadAllText(path);
                 return JsonConvert.DeserializeObject<T>(json);
             }
 
@@ -28,7 +26,7 @@ namespace Archivator_desktop_WPF_WTS.Core.Services
                 Directory.CreateDirectory(folderPath);
             }
 
-            var fileContent = JsonConvert.SerializeObject(content);
+            string fileContent = JsonConvert.SerializeObject(content);
             File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
         }
 

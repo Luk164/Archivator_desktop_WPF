@@ -1,6 +1,5 @@
-﻿using System.Windows.Controls;
-
-using Archivator_desktop_WPF_WTS.ViewModels;
+﻿using Archivator_desktop_WPF_WTS.ViewModels;
+using System.Windows.Controls;
 
 namespace Archivator_desktop_WPF_WTS.Views
 {

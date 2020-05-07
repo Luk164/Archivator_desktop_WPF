@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows;
-using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
+﻿using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;
 using ArchivatorDb;
 using ArchivatorDb.Entities;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
 {
@@ -37,7 +37,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
             try
             {
-                var result = MessageBox.Show("Are you sure you want to delete this editedObject?", "Confirmation", MessageBoxButton.YesNo);
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to delete this editedObject?", "Confirmation", MessageBoxButton.YesNo);
 
                 if (result == MessageBoxResult.Yes)
                 {
@@ -67,7 +67,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// <param name="name"></param>
         public void CreateTag(string name)
         {
-            _context.Add(new Tag(){Name = name});
+            _context.Add(new Tag() { Name = name });
             _context.SaveChangesAsync();
         }
 

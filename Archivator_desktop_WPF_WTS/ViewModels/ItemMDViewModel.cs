@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using Archivator_desktop_WPF_WTS.Contracts.Services;
+﻿using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;
 using Archivator_desktop_WPF_WTS.Models;
 using ArchivatorDb;
 using ArchivatorDb.Entities;
 using Microsoft.Win32;
+using System;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Windows;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
 {
@@ -62,7 +62,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// </summary>
         public void EditSelected()
         {
-            _navigationService.NavigateTo(typeof(MainViewModel).FullName, new EditModel(){context = _context, editedObject = Selected});
+            _navigationService.NavigateTo(typeof(MainViewModel).FullName, new EditModel() { context = _context, editedObject = Selected });
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
             try
             {
-                var result = MessageBox.Show("Are you sure you want to delete this editedObject?", "Confirmation", MessageBoxButton.YesNo);
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to delete this editedObject?", "Confirmation", MessageBoxButton.YesNo);
 
                 if (result == MessageBoxResult.Yes)
                 {
@@ -133,7 +133,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                 {
                     return;
                 }
-                    
+
                 if (saveFileDialog.FileName.IndexOfAny(Path.GetInvalidFileNameChars()) == -1)
                 {
                     MessageBox.Show("Invalid character/s detected in fileName!\nInvalid characters: " + Path.GetInvalidFileNameChars());

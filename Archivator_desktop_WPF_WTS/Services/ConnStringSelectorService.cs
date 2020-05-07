@@ -1,11 +1,4 @@
-﻿using System;
-using System.Windows;
-
-using Archivator_desktop_WPF_WTS.Contracts.Services;
-using Archivator_desktop_WPF_WTS.Models;
-
-using MahApps.Metro;
-
+﻿
 using Microsoft.Win32;
 
 namespace Archivator_desktop_WPF_WTS.Services
