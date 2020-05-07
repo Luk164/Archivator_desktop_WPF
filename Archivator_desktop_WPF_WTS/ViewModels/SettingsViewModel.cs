@@ -2,24 +2,25 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
-
 using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;
 using Archivator_desktop_WPF_WTS.Models;
 using ArchivatorDb;
-using ArchivatorDb.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using OfficeOpenXml;
+// ReSharper disable UnusedAutoPropertyAccessor.Local Disabled because structs need to be accessible to EPPlus library for xlsx generation
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
 {
+    /// <summary>
+    /// View-model for settings page. It changes settings for the entire app and allows exporting database.
+    /// </summary>
     public class SettingsViewModel : Observable, INavigationAware
     {
         private readonly AppConfig _config;
@@ -30,10 +31,12 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private string _versionDescription;
         private ICommand _setThemeCommand;
         private ICommand _privacyStatementCommand;
+        private readonly ArchivatorDbContext _context;
 
-        private ArchivatorDbContext _context;
-
-        struct Simple_item
+        /// <summary>
+        /// Used as a representation of Item for xlsx generation purposes
+        /// </summary>
+        private struct Simple_item
         {
             public int ItemId { get; set;}
             public string Name { get; set;}
@@ -45,6 +48,9 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             public string CreateDateTime { get; set;}
         }
 
+        /// <summary>
+        /// Used as a representation of FileEntity for xlsx generation purposes
+        /// </summary>
         private struct Simple_file
         {
             public int Id { get; set;}
@@ -53,6 +59,9 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             public int ParentItem { get; set;}
         }
 
+        /// <summary>
+        /// Used as a representation of EventEntity for xlsx generation purposes
+        /// </summary>
         private struct Simple_event
         {
             public int Id { get; set;}
@@ -66,6 +75,9 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             public int UserId { get; set;}
         }
 
+        /// <summary>
+        /// Used as a representation of Tag for xlsx generation purposes
+        /// </summary>
         private struct Simple_tag
         {
             public int Id { get; set;}
@@ -75,17 +87,24 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
         public AppTheme Theme
         {
-            get { return _theme; }
-            set { Set(ref _theme, value); }
+            get => _theme;
+            set => Set(ref _theme, value);
         }
 
         public string VersionDescription
         {
-            get { return _versionDescription; }
-            set { Set(ref _versionDescription, value); }
+            get => _versionDescription;
+            private set => Set(ref _versionDescription, value);
         }
 
+        /// <summary>
+        /// Command that sets theme for the entire application
+        /// </summary>
         public ICommand SetThemeCommand => _setThemeCommand ??= new RelayCommand<string>(OnSetTheme);
+
+        /// <summary>
+        /// Command that opens web browser using privacy statement link
+        /// </summary>
         public ICommand PrivacyStatementCommand => _privacyStatementCommand ??= new RelayCommand(OnPrivacyStatement);
 
         public SettingsViewModel(IOptions<AppConfig> config, IThemeSelectorService themeSelectorService, ISystemService systemService, IApplicationInfoService applicationInfoService, ArchivatorDbContext context)
@@ -116,23 +135,11 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private void OnPrivacyStatement()
             => _systemService.OpenInWebBrowser(_config.PrivacyStatement);
 
+        /// <summary>
+        /// Opens a dialog for saving database contents, then if confirmed generates the file and saves to specified location.
+        /// </summary>
         public async void ExportDb()
         {
-            ExcelPackage excel = new ExcelPackage();
-
-            var ws_items = excel.Workbook.Worksheets.Add("Items");
-            ws_items.Cells[1, 1].LoadFromCollection(await GenerateSimpleItemList(), true);
-
-            var ws_files = excel.Workbook.Worksheets.Add("Files");
-            ws_files.Cells[1, 1].LoadFromCollection(await GenerateSimpleFileList(), true);
-
-            var ws_events = excel.Workbook.Worksheets.Add("Events");
-            ws_events.Cells[1, 1].LoadFromCollection(await GenerateSimpleEventList(), true);
-
-            var ws_tags = excel.Workbook.Worksheets.Add("Tags");
-            ws_tags.Cells[1, 1].LoadFromCollection(await GenerateSimpleTagList(), true);
-
-
             SaveFileDialog _SD = new SaveFileDialog
             {
                 Filter = "ExcelFile (*.xlsx)|*.xlsx|Show All Files (*.*)|*.*",
@@ -142,12 +149,34 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
             if (_SD.ShowDialog() == true)
             {
+                ExcelPackage excel = new ExcelPackage();
+
+                var ws_items = excel.Workbook.Worksheets.Add("Items");
+                ws_items.Cells[1, 1].LoadFromCollection(await GenerateSimpleItemList(), true);
+
+                var ws_files = excel.Workbook.Worksheets.Add("Files");
+                ws_files.Cells[1, 1].LoadFromCollection(await GenerateSimpleFileList(), true);
+
+                var ws_events = excel.Workbook.Worksheets.Add("Events");
+                ws_events.Cells[1, 1].LoadFromCollection(await GenerateSimpleEventList(), true);
+
+                var ws_tags = excel.Workbook.Worksheets.Add("Tags");
+                ws_tags.Cells[1, 1].LoadFromCollection(await GenerateSimpleTagList(), true);
+
                 //Write the file to the disk
                 FileInfo fi = new FileInfo(_SD.FileName);
                 excel.SaveAs(fi);
             }
+            else
+            {
+                MessageBox.Show("Export has been cancelled by user!", "Export cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
+        /// <summary>
+        /// Generates list of simple representations of all Items in database.
+        /// </summary>
+        /// <returns>List of simple representations</returns>
         private async Task<List<Simple_item>> GenerateSimpleItemList()
         {
             return (from item in await _context.Items.ToListAsync()
@@ -164,6 +193,10 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                 }).ToList();
         }
 
+        /// <summary>
+        /// Generates list of simple representations of all FileEntities in database.
+        /// </summary>
+        /// <returns>List of simple representations</returns>
         private async Task<List<Simple_file>> GenerateSimpleFileList()
         {
             return (from file in await _context.Files.ToListAsync()
@@ -176,6 +209,10 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                 }).ToList();
         }
 
+        /// <summary>
+        /// Generates list of simple representations of all EventEntities in database.
+        /// </summary>
+        /// <returns>List of simple representations</returns>
         private async Task<List<Simple_event>> GenerateSimpleEventList()
         {
             return (from eventEntity in await _context.Events.ToListAsync()
@@ -193,6 +230,10 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                 }).ToList();
         }
 
+        /// <summary>
+        /// Generates list of simple representations of all Tags in database.
+        /// </summary>
+        /// <returns>List of simple representations</returns>
         private async Task<List<Simple_tag>> GenerateSimpleTagList()
         {
             return (from tag in await _context.Tags.ToListAsync()

@@ -9,6 +9,9 @@ using Archivator_desktop_WPF_WTS.Helpers;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
 {
+    /// <summary>
+    /// Blank template viewModel left for reference purposes.
+    /// </summary>
     public class MasterDetail2ViewModel : Observable, INavigationAware
     {
         private readonly ISampleDataService _sampleDataService;

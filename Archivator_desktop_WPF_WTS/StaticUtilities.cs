@@ -1,16 +1,29 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media.Imaging;
+using Archivator_desktop_WPF_WTS.Converters;
+using ArchivatorDb.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Archivator_desktop_WPF_WTS
 {
+    /// <summary>
+    /// Holds static functions for the code to increase re-usability
+    /// </summary>
+
+    //Can be made private check suppressed, all static functions are to be accessible to all parts of code
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class StaticUtilities
     {
         public const double MAX_FILE_SIZE = 2.5e+7;
@@ -46,6 +59,11 @@ namespace Archivator_desktop_WPF_WTS
             }
         }
 
+        /// <summary>
+        /// Tests connectivity of DbContext object.
+        /// </summary>
+        /// <param name="context">DbContext object to be tested</param>
+        /// <returns>True if connectible, false if there is a problem</returns>
         public static bool TestConnection(this DbContext context)
         {
             DbConnection conn = context.Database.GetDbConnection();
@@ -56,12 +74,19 @@ namespace Archivator_desktop_WPF_WTS
 
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                Debug.Write(e.Message);
+
                 return false;
             }
         }
 
+        /// <summary>
+        /// Prepares options builder with all the required settings
+        /// </summary>
+        /// <param name="builder">Builder for settings to be applied to</param>
+        /// <param name="configuration">Application configuration object</param>
         public static void SetupDatabase(DbContextOptionsBuilder builder, IConfiguration configuration)
         {
             try
@@ -77,6 +102,11 @@ namespace Archivator_desktop_WPF_WTS
             }
         }
 
+        /// <summary>
+        /// Creates an image object from byte[] data
+        /// </summary>
+        /// <param name="imageData">Byte[] used for image object creation</param>
+        /// <returns></returns>
         public static BitmapImage LoadImage(this byte[] imageData)
         {
             if (imageData == null || imageData.Length == 0) return null;
@@ -93,6 +123,79 @@ namespace Archivator_desktop_WPF_WTS
             }
             image.Freeze();
             return image;
+        }
+
+        /// <summary>
+        /// Synchronizes tags of Event with tags selected by user in GUI
+        /// </summary>
+        /// <param name="Event">Event to be synced</param>
+        /// <param name="listOfSelectedTags">List of tags that are supposed to be in Event</param>
+        public static void SyncEventWithTags(EventEntity Event, List<Tag> listOfSelectedTags)
+        {
+            //add all required tags that are not already present
+            foreach (var tag in listOfSelectedTags.Where(tag => Event.Tags.All(event2Tag => event2Tag.Tag != tag)))
+            {
+                Event.Tags.Add(new Event2Tag(){Event = Event, Tag = tag});
+            }
+
+            //remove all tags that are not supposed to be there
+            foreach (var event2Tag in Event.Tags.ToList().Where(event2Tag => !listOfSelectedTags.Contains(event2Tag.Tag)))
+            {
+                Event.Tags.Remove(event2Tag);
+            }
+        }
+
+        public static void UniversalPrint(int id, string name, char type, byte[] qrCode)
+        {
+            PrintDialog dialog = new PrintDialog();
+            if (dialog.ShowDialog() != true) return;
+
+            var flowDoc = new FlowDocument
+            {
+                PageWidth = dialog.PrintableAreaWidth,
+                PageHeight = dialog.PrintableAreaHeight + 100,
+                PagePadding = new Thickness(15, 20, 0, 0)
+            };
+            flowDoc.Blocks.Add(new Paragraph(new Run(type + " - " + id + "\n" + name))
+            {
+                FontSize = 19
+            });
+            flowDoc.Blocks.Add(new BlockUIContainer(new Image()
+            {
+                Source = qrCode.LoadImage(),
+                Height = 160,
+                Width = 160,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(-10, -20, 0, 0),
+                ClipToBounds = true
+            }));
+
+            IDocumentPaginatorSource idpSource = flowDoc;
+            dialog.PrintDocument(idpSource.DocumentPaginator, "");
+        }
+
+        
+        /// <summary>
+        /// Prints passed object. Only Item and FileEntity is allowed
+        /// </summary>
+        /// <param name="objectToPrint">Item or FileEntity to be printed. Throws exception if a different type is passed</param>
+        public static void PrintObject(object objectToPrint)
+        {
+            var converter = new DbObjectToQRCodeConverter();
+            var image = (byte[]) converter.Convert(objectToPrint, null, null, null);
+
+            switch (objectToPrint)
+            {
+                case Item item:
+                    StaticUtilities.UniversalPrint(item.Id, item.Name, 'I', image);
+                    break;
+                case FileEntity fileEntity:
+                    StaticUtilities.UniversalPrint(fileEntity.Id, fileEntity.FileName, 'F', image);
+                    break;
+                default:
+                    throw new Exception("Unknown type passed to printObject, did you add another allowed type to DbObjectToQRCodeConverter?");
+            }
         }
     }
 }

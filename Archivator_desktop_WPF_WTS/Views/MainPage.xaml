@@ -60,7 +60,6 @@
                 <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" DockPanel.Dock="Bottom" x:Name="bt_submit" Click="Bt_submit_OnClick" Content="&#xE74E;" FontFamily="Segoe MDL2 Assets" Margin="0,0,10,10" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="24"/>
                 <DataGrid
                     DockPanel.Dock="Bottom" mah:DataGridHelper.EnableCellEditAssist="True"
-                    SelectedItem="{Binding SelectedEvent, Mode=TwoWay}"
                     AddingNewItem="DataGrid_OnAddingEvent"
                     HorizontalScrollBarVisibility="Auto" ItemsSource="{Binding CurrItem.Events, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False" VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserAddRows="True" AllowDrop="False" AutomationProperties.Name="Events" Margin="10,10,10,0" VerticalAlignment="Stretch">
                     <DataGrid.Columns>

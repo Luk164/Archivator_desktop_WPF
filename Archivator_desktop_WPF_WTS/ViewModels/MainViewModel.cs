@@ -10,13 +10,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
 {
+    /// <summary>
+    /// ViewModel for Main page. Used for adding and editing items
+    /// </summary>
     public class MainViewModel : Observable, INavigationAware
     {
+        /// <summary>
+        /// Stores a reference to currently created/edited item
+        /// </summary>
         public Item CurrItem { get; set; }
         private ArchivatorDbContext _context { get; set; }
-        public IList<Tag> Tags { get; }
-        public EventEntity SelectedEvent { get; set; }
 
+        /// <summary>
+        /// Provides access to list of all tags in database
+        /// </summary>
+        public IList<Tag> Tags { get; }
+
+        /// <summary>
+        /// Constructor for MainViewModel
+        /// </summary>
+        /// <param name="context">ArchivatorDbContext used to interact with database</param>
         public MainViewModel(ArchivatorDbContext context)
         {
             _context = context ?? throw new Exception("ERROR: DB context is null!");
@@ -25,28 +38,9 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             Tags = _context.Tags.ToList();
         }
 
-        public void SyncEventWithTags(EventEntity Event, List<Tag> listOfSelectedTags)
-        {
-            //var eventEntity = _context.Events.Find(EventId);
-
-            foreach (var tag in listOfSelectedTags)
-            {
-                //already inside
-                if (Event.Tags.Any(event2Tag => event2Tag.Tag == tag))
-                {
-                    continue;
-                }
-
-                Event.Tags.Add(new Event2Tag(){Event = Event, Tag = tag});
-            }
-
-            //remove all tags that are not supposed to be there
-            foreach (var event2Tag in Event.Tags.ToList().Where(event2Tag => !listOfSelectedTags.Contains(event2Tag.Tag)))
-            {
-                Event.Tags.Remove(event2Tag);
-            }
-        }
-
+        /// <summary>
+        /// Saves changes to database
+        /// </summary>
         public void SaveChanges()
         {
             _context.SaveChanges();
@@ -73,6 +67,10 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
         }
 
+        /// <summary>
+        /// Creates new entity proxy using ArchivatorDbContext _context and tracks it
+        /// </summary>
+        /// <returns>New tracked entity proxy object</returns>
         public EventEntity GetNewEventEntity()
         {
             var newEntity = _context.CreateProxy<EventEntity>();

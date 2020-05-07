@@ -3,14 +3,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
-using Archivator_desktop_WPF_WTS.Core.Contracts.Services;
-using Archivator_desktop_WPF_WTS.Core.Models;
 using Archivator_desktop_WPF_WTS.Helpers;
 using ArchivatorDb;
 using ArchivatorDb.Entities;
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
 {
+    /// <summary>
+    /// View-model of tags page. Used to view, add and delete Tag objects from database.
+    /// </summary>
     public class TagsViewModel : Observable, INavigationAware
     {
         private readonly ArchivatorDbContext _context;
@@ -29,6 +30,9 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             set => Set(ref _selected, value);
         }
 
+        /// <summary>
+        /// Opens a confirmation dialog and if confirmed deletes currently selected tag.
+        /// </summary>
         public void DeleteSelected()
         {
             try
@@ -49,11 +53,18 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             }
         }
 
+        /// <summary>
+        /// Saves changes to tags to database
+        /// </summary>
         public void SubmitChanges()
         {
             _context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Creates new tag, adds to database and saves changes
+        /// </summary>
+        /// <param name="name"></param>
         public void CreateTag(string name)
         {
             _context.Add(new Tag(){Name = name});

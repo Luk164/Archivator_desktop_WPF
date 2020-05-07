@@ -20,6 +20,9 @@ using MessageBox = System.Windows.MessageBox;
 
 namespace Archivator_desktop_WPF_WTS.Views
 {
+    /// <summary>
+    /// CodeBehind of the main page
+    /// </summary>
     public partial class MainPage : Page
     {
         private OpenFileDialog fileDialog;
@@ -27,6 +30,11 @@ namespace Archivator_desktop_WPF_WTS.Views
         private readonly MainViewModel _viewModel;
         private readonly INavigationService _navigationService;
 
+        /// <summary>
+        /// Constructor for main page
+        /// </summary>
+        /// <param name="viewModel">MainPage view-model</param>
+        /// <param name="navigationService">Service allowing navigation between pages</param>
         public MainPage(MainViewModel viewModel, INavigationService navigationService)
         {
             InitializeComponent();
@@ -36,11 +44,19 @@ namespace Archivator_desktop_WPF_WTS.Views
             _navigationService = navigationService;
         }
 
+        /// <summary>
+        /// Initializes dialog for opening files.
+        /// </summary>
         private void InitOpenFileDialog()
         {
             fileDialog = new OpenFileDialog {InitialDirectory = "c:\\", Multiselect = true, Title = "File selector"};
         }
 
+        /// <summary>
+        /// Starts process of adding files, disables submit button until it is finished.
+        /// </summary>
+        /// <param name="sender">Sender of action</param>
+        /// <param name="e">Extra arguments</param>
         private async void btn_add_file_Click(object sender, RoutedEventArgs e)
         {
             bt_submit.IsEnabled=false;
@@ -51,9 +67,9 @@ namespace Archivator_desktop_WPF_WTS.Views
         }
 
         /// <summary>
-        /// Loads file in parallel and returns List<string> with their contents
+        /// Loads file in parallel and returns List of strings with their contents
         /// </summary>
-        /// <returns>Task<List<string>> Containing the contents of selected files</returns>
+        /// <returns>List of FileEntities containing the contents of selected files</returns>
         private async Task<List<FileEntity>> MakeFileEntityListAsync()
         {
             if (fileDialog.ShowDialog() == true) //check if show dialog successful
@@ -69,6 +85,11 @@ namespace Archivator_desktop_WPF_WTS.Views
             progress_bar.Dispatcher.Invoke(() => progress_bar.Value = 0);
         }
 
+        /// <summary>
+        /// Saves all changes and navigates to Item master-detail page.
+        /// </summary>
+        /// <param name="sender">Sender of action</param>
+        /// <param name="e">Extra parameters</param>
         private void Bt_submit_OnClick(object sender, RoutedEventArgs e)
         {
             _viewModel.SaveChanges();
@@ -85,6 +106,11 @@ namespace Archivator_desktop_WPF_WTS.Views
             dg_files.Items.Refresh();
         }
 
+        /// <summary>
+        /// Generates a list of files from provided list of paths.
+        /// </summary>
+        /// <param name="pathList">List of paths to be used for fileEntity generation</param>
+        /// <returns></returns>
         private async Task<List<FileEntity>> makeFileEntitiesFromPathListAsync(IEnumerable<string> pathList)
         {
             var filePaths = pathList.ToList();
@@ -160,7 +186,7 @@ namespace Archivator_desktop_WPF_WTS.Views
 
             ((CheckComboBox) sender).SelectedItemsOverride = eventEntity.SelectedTags; //should fix some bugs
 
-            _viewModel.SyncEventWithTags(eventEntity, eventEntity.SelectedTags.ToList());
+            StaticUtilities.SyncEventWithTags(eventEntity, eventEntity.SelectedTags.ToList());
         }
 
         private void DataGrid_OnAddingEvent(object? sender, AddingNewItemEventArgs e)
