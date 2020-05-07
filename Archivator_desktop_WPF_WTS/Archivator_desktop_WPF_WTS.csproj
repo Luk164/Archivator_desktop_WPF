@@ -14,6 +14,12 @@
     <ApplicationIcon>Docarchive_icon-icons.com_51167.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Documentation\**" />
+    <EmbeddedResource Remove="Documentation\**" />
+    <None Remove="Documentation\**" />
+    <Page Remove="Documentation\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="4.6.82" />
     <PackageReference Include="EPPlus" Version="4.5.3.3" />
     <PackageReference Include="MahApps.Metro" Version="2.0.0-alpha0660" />
