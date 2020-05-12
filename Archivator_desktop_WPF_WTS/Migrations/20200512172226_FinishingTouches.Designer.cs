@@ -4,14 +4,16 @@ using ArchivatorDb;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Archivator_desktop_WPF_WTS.Migrations
 {
     [DbContext(typeof(ArchivatorDbContext))]
-    partial class ArchivatorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200512172226_FinishingTouches")]
+    partial class FinishingTouches
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

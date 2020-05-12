@@ -16,8 +16,8 @@ namespace Archivator_desktop_WPF_WTS.Converters
         {
             var identifier = DbObject switch
             {
-                Item item => "I - " + item.Id,
-                FileEntity fileEntity => "F - " + fileEntity.Id,
+                Item item => item.AlternateKey,
+                FileEntity fileEntity => fileEntity.ParentItem.AlternateKey + "/" + fileEntity.Id,
                 _ => throw new Exception("Unexpected object type passed to converter!")
             };
 

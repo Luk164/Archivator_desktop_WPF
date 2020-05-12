@@ -135,7 +135,7 @@ namespace Archivator_desktop_WPF_WTS
             //add all required tags that are not already present
             foreach (var tag in listOfSelectedTags.Where(tag => Event.Tags.All(event2Tag => event2Tag.Tag != tag)))
             {
-                Event.Tags.Add(new Event2Tag(){Event = Event, Tag = tag});
+                Event.Tags.Add(new Event2Tag {Event = Event, Tag = tag});
             }
 
             //remove all tags that are not supposed to be there
@@ -145,7 +145,7 @@ namespace Archivator_desktop_WPF_WTS
             }
         }
 
-        public static void UniversalPrint(int id, string name, char type, byte[] qrCode)
+        public static void UniversalPrint(string identifier, string name, byte[] qrCode)
         {
             PrintDialog dialog = new PrintDialog();
             if (dialog.ShowDialog() != true) return;
@@ -156,7 +156,7 @@ namespace Archivator_desktop_WPF_WTS
                 PageHeight = dialog.PrintableAreaHeight + 100,
                 PagePadding = new Thickness(15, 20, 0, 0)
             };
-            flowDoc.Blocks.Add(new Paragraph(new Run(type + " - " + id + "\n" + name))
+            flowDoc.Blocks.Add(new Paragraph(new Run(identifier + "\n" + name))
             {
                 FontSize = 19
             });
@@ -188,10 +188,10 @@ namespace Archivator_desktop_WPF_WTS
             switch (objectToPrint)
             {
                 case Item item:
-                    StaticUtilities.UniversalPrint(item.Id, item.Name, 'I', image);
+                    UniversalPrint(item.AlternateKey, item.Name, image);
                     break;
                 case FileEntity fileEntity:
-                    StaticUtilities.UniversalPrint(fileEntity.Id, fileEntity.FileName, 'F', image);
+                    UniversalPrint(fileEntity.ParentItem.AlternateKey + "/" + fileEntity.Id, fileEntity.FileName, image);
                     break;
                 default:
                     throw new Exception("Unknown type passed to printObject, did you add another allowed type to DbObjectToQRCodeConverter?");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;
 using Archivator_desktop_WPF_WTS.Models;
@@ -26,6 +27,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// </summary>
         public IList<Tag> Tags { get; }
 
+        public static IEnumerable<char> Alphabet => Item.CategoryList;
+
         /// <summary>
         /// Constructor for MainViewModel
         /// </summary>
@@ -39,10 +42,18 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         }
 
         /// <summary>
-        /// Saves changes to database
+        /// Saves changes to database, checks if internal ID not already present.
         /// </summary>
         public void SaveChanges()
         {
+            if (_context.Items.Any(i =>
+                i.InternalId == CurrItem.InternalId))
+            {
+                MessageBox.Show(
+                    "ERROR: Item with this internal ID already exists in database! Please choose a different one!",
+                    "Id not unique", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
             _context.SaveChanges();
         }
 

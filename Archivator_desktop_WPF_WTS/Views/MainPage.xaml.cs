@@ -5,10 +5,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.ViewModels;
@@ -42,6 +44,7 @@ namespace Archivator_desktop_WPF_WTS.Views
             DataContext = viewModel;
             _viewModel = viewModel;
             _navigationService = navigationService;
+            ComboBox.ItemsSource = Item.CategoryList;
         }
 
         /// <summary>
@@ -189,9 +192,14 @@ namespace Archivator_desktop_WPF_WTS.Views
             StaticUtilities.SyncEventWithTags(eventEntity, eventEntity.SelectedTags.ToList());
         }
 
-        private void DataGrid_OnAddingEvent(object? sender, AddingNewItemEventArgs e)
+        private void DataGrid_OnAddingEvent(object sender, AddingNewItemEventArgs e)
         {
             e.NewItem = _viewModel.GetNewEventEntity();
+        }
+
+        private void tb_PreviewTextInput_numbersOnly(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = Regex.IsMatch(e.Text, "[^0-9]+");
         }
     }
 }

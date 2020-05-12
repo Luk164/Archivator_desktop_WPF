@@ -31,6 +31,12 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Margin="0,0,0,10" HorizontalAlignment="Stretch" Grid.Column="0">
+                <Label Content="Category + ID"/>
+                <DockPanel>
+                    <ComboBox x:Name="ComboBox" DockPanel.Dock="Left" ItemsSource="{Binding Alphabet}" SelectedItem="{Binding CurrItem.Category, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox DockPanel.Dock="Left" Text="{Binding CurrItem.InternalId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="ID" PreviewTextInput="tb_PreviewTextInput_numbersOnly" HorizontalAlignment="Left" Width="120"/>
+                    <TextBox DockPanel.Dock="Left" Text="{Binding CurrItem.SubCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="Sub" PreviewTextInput="tb_PreviewTextInput_numbersOnly" HorizontalAlignment="Stretch"/>
+                </DockPanel>
                 <Label Content="Name" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <TextBox mah:TextBoxHelper.Watermark="Name" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding CurrItem.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <Label Content="Description" Margin="0,15,0,0"/>

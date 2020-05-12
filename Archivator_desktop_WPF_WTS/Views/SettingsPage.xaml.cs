@@ -1,11 +1,16 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Windows.Security.Cryptography.Certificates;
 using Archivator_desktop_WPF_WTS.ViewModels;
 
 namespace Archivator_desktop_WPF_WTS.Views
 {
     public partial class SettingsPage : Page
     {
+        /// <summary>
+        /// Code-behind for settings page.
+        /// </summary>
+        /// <param name="viewModel"></param>
         public SettingsPage(SettingsViewModel viewModel)
         {
             InitializeComponent();
@@ -13,9 +18,12 @@ namespace Archivator_desktop_WPF_WTS.Views
             //tb_connection_string.Text = viewModel.GetDbConnString();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Export_Button_Click(object sender, RoutedEventArgs e)
         {
+            //todo determinate progress
+            Export_MetroProgressBar.IsIndeterminate = true;
             ((SettingsViewModel)DataContext).ExportDb();
+            Export_MetroProgressBar.IsIndeterminate = false;
         }
 
 

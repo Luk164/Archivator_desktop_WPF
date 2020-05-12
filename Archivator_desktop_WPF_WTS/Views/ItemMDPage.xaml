@@ -32,6 +32,7 @@
                     Grid.Column="1"
                     Margin="{StaticResource SmallLeftMargin}"
                     VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource MahApps.Styles.TextBlock.Watermark}" Text="{Binding AlternateKey, Mode=OneWay}"/>
                     <TextBlock Style="{StaticResource ListTitleStyle}" Text="{Binding Name}" />
                     <TextBlock Style="{StaticResource ListSubTitleStyle}" Text="{Binding Description}" />
                 </StackPanel>
@@ -52,14 +53,23 @@
                     CanContentScroll="False">
                     <StackPanel HorizontalAlignment="Left" Margin="{StaticResource MediumLeftTopRightBottomMargin}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                            <TextBlock
-                                Text="&#xE12B;"
-                                Style="{StaticResource BigIconStyle}"
-                                AutomationProperties.Name="Detail icon" />
-                            <TextBlock
-                                Margin="{StaticResource SmallLeftMargin}"
-                                Text="{Binding Selected.Name, Mode=OneWay}"
-                                Style="{StaticResource PageTitleStyle}" />
+                            <DockPanel>
+                                <TextBlock
+                                    DockPanel.Dock="Left"
+                                    Text="&#xE12B;"
+                                    Style="{StaticResource BigIconStyle}"
+                                    AutomationProperties.Name="Detail icon" />
+                                <TextBlock
+                                    DockPanel.Dock="Left"
+                                    Margin="{StaticResource SmallLeftMargin}"
+                                    Text="{Binding Selected.Name, Mode=OneWay}"
+                                    Style="{StaticResource PageTitleStyle}" />
+                                <TextBlock
+                                    DockPanel.Dock="Top" Text="{Binding Selected.AlternateKey}"
+                                    Margin="{StaticResource SmallLeftMargin}"
+                                    Style="{StaticResource MahApps.Styles.TextBlock.Watermark}"
+                                    />
+                            </DockPanel>
                         </StackPanel>
                         <StackPanel Margin="{StaticResource SmallTopMargin}">
                             <TextBlock

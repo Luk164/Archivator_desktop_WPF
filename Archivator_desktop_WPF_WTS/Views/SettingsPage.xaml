@@ -63,13 +63,10 @@
                     </RadioButton>
                     <DockPanel>
                         <Label DockPanel.Dock="Top" Content="Export to xlsx" Margin="0,20,0,0" FontSize="18" FontWeight="Bold" />
-                        <Button DockPanel.Dock="Left" Content="Export" Click="Button_Click" ToolTip="Exports current database content in a simplified form into Excel document" HorizontalAlignment="Left" Width="52"/>
-                        <mah:MetroProgressBar DockPanel.Dock="Right" HorizontalAlignment="Right" Width="200"/>
+                        <Button DockPanel.Dock="Left" Content="Export" Click="Export_Button_Click" ToolTip="Exports current database content in a simplified form into Excel document" HorizontalAlignment="Left" Width="52"/>
+                        <mah:MetroProgressBar x:Name="Export_MetroProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="200"/>
                     </DockPanel>
-                    <Label Content="Export to xlsx" Margin="0,20,0,0" FontSize="18" FontWeight="Bold" />
-                    <Button Content="Export" Click="Button_Click" ToolTip="Exports current database content in a simplified form into Excel document" HorizontalAlignment="Left" Width="52"/>
                 </StackPanel>
-                <StackPanel/>
             </StackPanel>
 
             <TextBlock
