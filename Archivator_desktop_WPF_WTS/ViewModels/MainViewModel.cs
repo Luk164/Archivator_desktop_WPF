@@ -20,7 +20,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// Stores a reference to currently created/edited item
         /// </summary>
         public Item CurrItem { get; set; }
-        private ArchivatorDbContext _context { get; set; }
+
+        private ArchivatorDbContext _context;
 
         /// <summary>
         /// Provides access to list of all tags in database
@@ -88,6 +89,19 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             _context.Add(newEntity);
             newEntity.ParenItem = CurrItem;
             return newEntity;
+        }
+
+        /// <summary>
+        /// Creates new tag, adds to database and saves changes
+        /// </summary>
+        /// <param name="name"></param>
+        public void CreateTag(string name)
+        {
+            var newTag = _context.CreateProxy<Tag>();
+            newTag.Name = name;
+
+            _context.Add(newTag);
+            Tags.Add(newTag);
         }
     }
 }

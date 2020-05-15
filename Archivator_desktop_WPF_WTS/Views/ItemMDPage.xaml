@@ -6,7 +6,6 @@
     xmlns:strings="clr-namespace:Archivator_desktop_WPF_WTS.Strings"
     xmlns:viewModels="clr-namespace:Archivator_desktop_WPF_WTS.ViewModels"
     xmlns:entities="clr-namespace:ArchivatorDb.Entities;assembly=ArchivatorDb"
-    xmlns:Converters="clr-namespace:Archivator_desktop_WPF_WTS.Converters"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="Archivator_desktop_WPF_WTS.Views.ItemMDPage"
     Style="{DynamicResource MahApps.Styles.Page}"
@@ -15,7 +14,6 @@
     d:DesignWidth="800"
     d:DataContext="{d:DesignInstance {x:Type viewModels:ItemMDViewModel}}">
     <Page.Resources>
-        <Converters:TagListToStringConverter x:Key="TagListToStringConverter"/>
         <DataTemplate x:Key="ItemTemplate" DataType="entities:Item">
             <Grid Height="60">
                 <Grid.ColumnDefinitions>
@@ -33,8 +31,8 @@
                     Margin="{StaticResource SmallLeftMargin}"
                     VerticalAlignment="Center">
                     <TextBlock Style="{StaticResource MahApps.Styles.TextBlock.Watermark}" Text="{Binding AlternateKey, Mode=OneWay}"/>
-                    <TextBlock Style="{StaticResource ListTitleStyle}" Text="{Binding Name}" />
-                    <TextBlock Style="{StaticResource ListSubTitleStyle}" Text="{Binding Description}" />
+                    <TextBlock Style="{StaticResource ListTitleStyle}" Text="{Binding Name}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxWidth="150" MaxHeight="20" HorizontalAlignment="Left"/>
+                    <TextBlock Style="{StaticResource ListSubTitleStyle}" Text="{Binding Description}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxWidth="190" MaxHeight="20" HorizontalAlignment="Left" />
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -52,6 +50,11 @@
                     VerticalScrollBarVisibility="Auto"
                     CanContentScroll="False">
                     <StackPanel HorizontalAlignment="Left" Margin="{StaticResource MediumLeftTopRightBottomMargin}">
+                        <TextBlock
+                                    DockPanel.Dock="Top" Text="{Binding Selected.AlternateKey}"
+                                    Margin="{StaticResource SmallLeftMargin}"
+                                    Style="{StaticResource MahApps.Styles.TextBlock.Watermark}" HorizontalAlignment="Center" VerticalAlignment="Top"
+                                    />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                             <DockPanel>
                                 <TextBlock
@@ -64,11 +67,6 @@
                                     Margin="{StaticResource SmallLeftMargin}"
                                     Text="{Binding Selected.Name, Mode=OneWay}"
                                     Style="{StaticResource PageTitleStyle}" />
-                                <TextBlock
-                                    DockPanel.Dock="Top" Text="{Binding Selected.AlternateKey}"
-                                    Margin="{StaticResource SmallLeftMargin}"
-                                    Style="{StaticResource MahApps.Styles.TextBlock.Watermark}"
-                                    />
                             </DockPanel>
                         </StackPanel>
                         <StackPanel Margin="{StaticResource SmallTopMargin}">
@@ -109,11 +107,10 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
                                     <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
-                                    <DataGridTextColumn Header="Date" Binding="{Binding Date, UpdateSourceTrigger=PropertyChanged}" />
+                                    <DataGridTextColumn Header="Date" Binding="{Binding Date, Mode=OneWay, StringFormat=\{0:g\}}" />
                                     <DataGridTextColumn Header="AuxDate" Binding="{Binding AuxDate, UpdateSourceTrigger=PropertyChanged}" />
                                     <DataGridTextColumn Header="Location" Binding="{Binding Location, UpdateSourceTrigger=PropertyChanged}"/>
-                                    <DataGridTextColumn Header="Tags"
-                                                        Binding="{Binding Tags, Converter={StaticResource TagListToStringConverter}, FallbackValue=N/A, Mode=OneWay, TargetNullValue=N/A}"/>
+                                    <DataGridTextColumn Header="Tags" Binding="{Binding Tags, Converter={StaticResource TagListToStringConverter}, FallbackValue=N/A, Mode=OneWay, TargetNullValue=N/A}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
@@ -130,16 +127,20 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="48" />
+                <RowDefinition Height="40" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <TextBlock
                 Style="{StaticResource PageTitleStyle}"
                 Text="{x:Static strings:Resources.ItemMDPageTitle}" />
+            <TextBox Grid.Row="1" mah:TextBoxHelper.Watermark="Search"
+                     Text="{Binding SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     VerticalAlignment="Top" Margin="5,0,0,0"/>
             <ListView
-                Grid.Row="1"
-                ItemsSource="{Binding Items}"
+                Grid.Row="2"
+                ItemsSource="{Binding ItemsViewFiltered}"
                 ItemTemplate="{StaticResource ItemTemplate}"
-                SelectedItem="{Binding Selected, Mode=TwoWay}" />
+                SelectedItem="{Binding Selected, Mode=TwoWay}" VerticalAlignment="Stretch" />
         </Grid>
         <ContentControl
             Grid.Column="1"

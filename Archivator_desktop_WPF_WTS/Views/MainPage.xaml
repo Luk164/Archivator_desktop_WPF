@@ -19,9 +19,16 @@
             <RowDefinition Height="48" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock
+        <DockPanel>
+            <TextBlock
             Style="{StaticResource PageTitleStyle}"
             Text="{x:Static strings:Resources.MainPageTitle}" />
+            <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" DockPanel.Dock="Right" x:Name="bt_submit" Click="Bt_submit_OnClick" Content="&#xE74E;" FontFamily="Segoe MDL2 Assets" Margin="0,0,0,0" Height="27" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="24"/>
+            <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
+                    Click="btn_add_file_Click"
+                    Content="&#xE723;"
+                    DockPanel.Dock="Right" Margin="0,0,0,0" FontFamily="Segoe MDL2 Assets" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        </DockPanel>
         <Grid
             Grid.Row="1"
             Margin="{StaticResource MediumLeftRightMargin}"
@@ -34,21 +41,20 @@
                 <Label Content="Category + ID"/>
                 <DockPanel>
                     <ComboBox x:Name="ComboBox" DockPanel.Dock="Left" ItemsSource="{Binding Alphabet}" SelectedItem="{Binding CurrItem.Category, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBox DockPanel.Dock="Left" Text="{Binding CurrItem.InternalId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="ID" PreviewTextInput="tb_PreviewTextInput_numbersOnly" HorizontalAlignment="Left" Width="120"/>
-                    <TextBox DockPanel.Dock="Left" Text="{Binding CurrItem.SubCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="Sub" PreviewTextInput="tb_PreviewTextInput_numbersOnly" HorizontalAlignment="Stretch"/>
+                    <TextBox DockPanel.Dock="Left" Text="{Binding CurrItem.InternalId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="ID" PreviewTextInput="Tb_PreviewTextInput_numbersOnly" HorizontalAlignment="Left" Width="120"/>
+                    <TextBox DockPanel.Dock="Left" Text="{Binding CurrItem.SubCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="Sub" PreviewTextInput="Tb_PreviewTextInput_numbersOnly" HorizontalAlignment="Stretch"/>
                 </DockPanel>
                 <Label Content="Name" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <TextBox mah:TextBoxHelper.Watermark="Name" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding CurrItem.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <Label Content="Description" Margin="0,15,0,0"/>
                 <TextBox Text="{Binding CurrItem.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          mah:TextBoxHelper.Watermark="Description"
+                         AcceptsReturn="True"
                          TextWrapping="Wrap"
                          HorizontalAlignment="Stretch"
                          mah:TextBoxHelper.IsSpellCheckContextMenuEnabled="True"
                          HorizontalScrollBarVisibility="Disabled"
                          VerticalScrollBarVisibility="Auto" Height="150"/>
-                <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" Click="btn_add_file_Click" Content="&#xE723;" HorizontalAlignment="Left" Margin="0,15,0,0" FontFamily="Segoe MDL2 Assets" FontSize="24"/>
-                <Button x:Name="button" Click="button_Click" Content="Button" Visibility="Hidden"/>
             </StackPanel>
             <DockPanel Grid.Column="1">
                 <DataGrid x:Name="dg_files" mah:DataGridHelper.EnableCellEditAssist="True" DockPanel.Dock="Top" ItemsSource="{Binding CurrItem.Files, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Drop="files_Drop_action" Margin="10,10,10,0" IsSynchronizedWithCurrentItem="True" CanUserAddRows="False" AutomationProperties.Name="Files" AutoGenerateColumns="False" HorizontalAlignment="Right" Height="190" VerticalAlignment="Top">
@@ -63,7 +69,6 @@
                     <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" Content="&#xE10A;" ToolTip="Cancels all currently running tasks, may cause errors" Click="bt_cancel_all_operations" HorizontalAlignment="Right" Margin="5,0,13,0" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" DockPanel.Dock="Right" FontSize="16"/>
                     <mah:MetroProgressBar x:Name="progress_bar" HorizontalAlignment="Stretch" Height="13" Margin="10,5,10,0" VerticalAlignment="Top"/>
                 </DockPanel>
-                <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" DockPanel.Dock="Bottom" x:Name="bt_submit" Click="Bt_submit_OnClick" Content="&#xE74E;" FontFamily="Segoe MDL2 Assets" Margin="0,0,10,10" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="24"/>
                 <DataGrid
                     DockPanel.Dock="Bottom" mah:DataGridHelper.EnableCellEditAssist="True"
                     AddingNewItem="DataGrid_OnAddingEvent"
@@ -71,21 +76,35 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
                         <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
-                        <DataGridTextColumn Header="Date" Binding="{Binding Date, UpdateSourceTrigger=PropertyChanged}" />
+                        <DataGridTemplateColumn Header="Pick a Date">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <DatePicker SelectedDate="{Binding Date, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" d:DataContext="{d:DesignInstance entities:EventEntity}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="AuxDate" Binding="{Binding AuxDate, UpdateSourceTrigger=PropertyChanged}" />
                         <DataGridTextColumn Header="Location" Binding="{Binding Location, UpdateSourceTrigger=PropertyChanged}"/>
                         <DataGridTemplateColumn Header="Tags">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <xctk:CheckComboBox
-                                        ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Page}}, Mode=OneWay, Path=DataContext.Tags}"
-                                        d:DataContext="{d:DesignInstance entities:EventEntity}"
-                                        DisplayMemberPath="Name"
-                                        ItemSelectionChanged="Selector_OnItemSelectionChanged"
-                                        SelectedItemsOverride="{Binding SelectedTags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        Foreground="{DynamicResource MahApps.Brushes.Text}" />
+                                    <TextBlock Text="{Binding Tags, Converter={StaticResource TagListToStringConverter}}" d:DataContext="{d:DesignInstance entities:EventEntity}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellEditingTemplate>
+                                 <DataTemplate>
+                                     <StackPanel>
+                                         <xctk:CheckComboBox
+                                             ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Page}}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Path=DataContext.Tags}"
+                                             d:DataContext="{d:DesignInstance entities:EventEntity}"
+                                             DisplayMemberPath="Name"
+                                             ItemSelectionChanged="Selector_OnItemSelectionChanged"
+                                             SelectedItemsOverride="{Binding SelectedTags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Foreground="{DynamicResource MahApps.Brushes.Text}" />
+                                         <TextBox mah:TextBoxHelper.Watermark="Create new tag" Margin="0,10,0,0" KeyDown="Tb_new_tag_KeyDown" KeyUp="Tb_new_tag_KeyDown"/>
+                                     </StackPanel>
+                                 </DataTemplate>
+                            </DataGridTemplateColumn.CellEditingTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>

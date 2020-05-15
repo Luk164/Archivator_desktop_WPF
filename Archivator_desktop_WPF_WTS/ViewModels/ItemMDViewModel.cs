@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;
@@ -22,6 +24,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private readonly ArchivatorDbContext _context;
         private readonly INavigationService _navigationService;
         private FileEntity _selectedFile;
+        private string _searchString;
 
         /// <summary>
         /// Proxy for accessing selected file object. It cannot be accessed directly.
@@ -30,6 +33,23 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
             get => _selectedFile;
             set => Set(ref _selectedFile, value);
+        }
+
+        /// <summary>
+        /// Accessor for value used as a filter parameter for searching items. Setter also applies filter to ItemsViewFiltered.
+        /// </summary>
+        public string SearchString
+        {
+            get => _searchString;
+            set
+            {
+                _searchString = value;
+                ItemsViewFiltered.Filter = o => SearchString == null
+                                                || ((Item) o).Name.IndexOf(SearchString,
+                                                    StringComparison.OrdinalIgnoreCase) != -1
+                                                || ((Item) o).Description.IndexOf(SearchString,
+                                                    StringComparison.OrdinalIgnoreCase) != -1;
+            }
         }
 
         /// <summary>
@@ -44,7 +64,12 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// <summary>
         /// List of items used in GUI
         /// </summary>
-        public ObservableCollection<Item> Items { get; private set; }
+        private ObservableCollection<Item> _items;
+
+        /// <summary>
+        /// Allows us to search list of items
+        /// </summary>
+        public ICollectionView ItemsViewFiltered => CollectionViewSource.GetDefaultView(_items);
 
         /// <summary>
         /// Constructor for Item master-detail viewmodel.
@@ -62,7 +87,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// </summary>
         public void EditSelected()
         {
-            _navigationService.NavigateTo(typeof(MainViewModel).FullName, new EditModel(){context = _context, editedObject = Selected});
+            _navigationService.NavigateTo(typeof(MainViewModel).FullName,
+                new EditModel() {context = _context, editedObject = Selected});
         }
 
         /// <summary>
@@ -72,19 +98,21 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
             try
             {
-                var result = MessageBox.Show("Are you sure you want to delete this editedObject?", "Confirmation", MessageBoxButton.YesNo);
+                var result = MessageBox.Show("Are you sure you want to delete this editedObject?", "Confirmation",
+                    MessageBoxButton.YesNo);
 
                 if (result == MessageBoxResult.Yes)
                 {
                     _context.Remove(Selected);
-                    Items.Remove(Selected);
-                    Selected = Items.FirstOrDefault() ?? new Item();
+                    _items.Remove(Selected);
+                    Selected = _items.FirstOrDefault() ?? new Item();
                     _context.SaveChanges();
                 }
             }
             catch (Exception e)
             {
-                MessageBox.Show("An unhandled exception just occurred: " + e.Message, "Exception Occured", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("An unhandled exception just occurred: " + e.Message, "Exception Occured",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -93,14 +121,15 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             try
             {
                 //Items = new ObservableCollection<Item>(_context.Items.AsNoTracking());
-                Items = new ObservableCollection<Item>(_context.Items);
+                _items = new ObservableCollection<Item>(_context.Items);
 
-                Selected = Items.FirstOrDefault() ?? new Item();
+                Selected = _items.FirstOrDefault() ?? new Item();
                 _context.SaveChanges();
             }
             catch (Exception e)
             {
-                MessageBox.Show("An unhandled exception just occurred: " + e.Message, "Exception Occured", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("An unhandled exception just occurred: " + e.Message, "Exception Occured",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 throw;
             }
         }
@@ -116,7 +145,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
             if (_selectedFile == null)
             {
-                MessageBox.Show("ERROR: No file selected!", "General error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show("ERROR: No file selected!", "General error", MessageBoxButton.OK,
+                    MessageBoxImage.Exclamation);
                 return;
             }
 
@@ -133,10 +163,11 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                 {
                     return;
                 }
-                    
+
                 if (saveFileDialog.FileName.IndexOfAny(Path.GetInvalidFileNameChars()) == -1)
                 {
-                    MessageBox.Show("Invalid character/s detected in fileName!\nInvalid characters: " + Path.GetInvalidFileNameChars());
+                    MessageBox.Show("Invalid character/s detected in fileName!\nInvalid characters: " +
+                                    Path.GetInvalidFileNameChars());
                 }
                 else
                 {

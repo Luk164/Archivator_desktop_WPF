@@ -92,6 +92,7 @@
                             Style="{StaticResource BodyTextStyle}"
                             Text="{x:Static strings:Resources.SettingsPagePrivacyStatementText}" />
                     </InlineUIContainer></Hyperlink></TextBlock>
+            <Button Click="bt_quit" Content="Quit" HorizontalAlignment="Left" Margin="0,10,0,0"/>
         </StackPanel>
     </Grid>
 </Page>

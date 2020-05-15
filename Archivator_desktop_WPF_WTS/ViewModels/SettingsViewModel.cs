@@ -180,10 +180,10 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private async Task<List<Simple_item>> GenerateSimpleItemList()
         {
             return (from item in await _context.Items.ToListAsync()
-                select new Simple_item()
+                select new Simple_item
                 {
                     Name = item.Name,
-                    CreateDateTime = item.CreateDateTime.ToLongDateString(),
+                    CreateDateTime = item.CreateDateTime.ToShortDateString(),
                     Description = item.Description,
                     Events = item.Events.Aggregate("", (current, o) => current + ";" + o.Id),
                     Files = item.Files.Aggregate("", (current, o) => current + ";" + o.Id),
@@ -200,7 +200,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private async Task<List<Simple_file>> GenerateSimpleFileList()
         {
             return (from file in await _context.Files.ToListAsync()
-                select new Simple_file()
+                select new Simple_file
                 {
                     FileName = file.FileName,
                     Id = file.Id,
@@ -216,11 +216,11 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private async Task<List<Simple_event>> GenerateSimpleEventList()
         {
             return (from eventEntity in await _context.Events.ToListAsync()
-                select new Simple_event()
+                select new Simple_event
                 {
                     Id = eventEntity.Id,
                     AuxDate = eventEntity.AuxDate,
-                    Date = eventEntity.Date.ToLongDateString(),
+                    Date = eventEntity.Date.ToShortDateString(),
                     Description = eventEntity.Description,
                     Location = eventEntity.Location,
                     Name = eventEntity.Name,
@@ -237,7 +237,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private async Task<List<Simple_tag>> GenerateSimpleTagList()
         {
             return (from tag in await _context.Tags.ToListAsync()
-                select new Simple_tag()
+                select new Simple_tag
                 {
                     Id = tag.Id,
                     Events = tag.Events.Aggregate("", (current, o) => current + ";" + o.EventId),

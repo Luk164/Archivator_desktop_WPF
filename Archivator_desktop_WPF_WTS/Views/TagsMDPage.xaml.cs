@@ -17,8 +17,8 @@ namespace Archivator_desktop_WPF_WTS.Views
         {
             if (e.Key == Key.Enter)
             {
-                ((TagsViewModel) DataContext).CreateTag(tb_new_tag.Text);
-                MessageBox.Show("Success");
+                ((TagsViewModel) DataContext).CreateTag(((TextBox) sender).Text);
+                ((TextBox) sender).Clear();
             }
         }
 

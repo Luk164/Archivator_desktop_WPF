@@ -26,6 +26,11 @@ namespace Archivator_desktop_WPF_WTS.Views
             Export_MetroProgressBar.IsIndeterminate = false;
         }
 
+        private void bt_quit(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
 
 
         // TODO bring back simple connection string change

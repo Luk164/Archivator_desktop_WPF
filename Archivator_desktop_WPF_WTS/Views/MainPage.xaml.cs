@@ -197,9 +197,18 @@ namespace Archivator_desktop_WPF_WTS.Views
             e.NewItem = _viewModel.GetNewEventEntity();
         }
 
-        private void tb_PreviewTextInput_numbersOnly(object sender, TextCompositionEventArgs e)
+        private void Tb_PreviewTextInput_numbersOnly(object sender, TextCompositionEventArgs e)
         {
             e.Handled = Regex.IsMatch(e.Text, "[^0-9]+");
+        }
+
+        private void Tb_new_tag_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                ((MainViewModel) DataContext).CreateTag(((TextBox) sender).Text);
+                ((TextBox) sender).Clear();
+            }
         }
     }
 }
