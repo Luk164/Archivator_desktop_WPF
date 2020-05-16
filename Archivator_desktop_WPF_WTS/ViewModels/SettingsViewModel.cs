@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using OfficeOpenXml;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Local Disabled because structs need to be accessible to EPPlus library for xlsx generation
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
@@ -38,14 +39,15 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// </summary>
         private struct Simple_item
         {
-            public int ItemId { get; set;}
-            public string Name { get; set;}
-            public string Description { get; set;}
-            public string RelatedItems { get; set;}
-            public string Events { get; set;}
-            public string Files { get; set;}
-            public string UserId { get; set;}
-            public string CreateDateTime { get; set;}
+            public int ItemId { get; set; }
+            public string SecondaryId { get; set; }
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public string RelatedItems { get; set; }
+            public string Events { get; set; }
+            public string Files { get; set; }
+            public string UserId { get; set; }
+            public string CreateDateTime { get; set; }
         }
 
         /// <summary>
@@ -53,10 +55,10 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// </summary>
         private struct Simple_file
         {
-            public int Id { get; set;}
-            public string FileName { get; set;}
-            public string Description { get; set;}
-            public int ParentItem { get; set;}
+            public int Id { get; set; }
+            public string FileName { get; set; }
+            public string Description { get; set; }
+            public int ParentItem { get; set; }
         }
 
         /// <summary>
@@ -64,15 +66,15 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// </summary>
         private struct Simple_event
         {
-            public int Id { get; set;}
-            public string Name { get; set;}
-            public string Description { get; set;}
-            public string Date { get; set;}
-            public string AuxDate { get; set;}
-            public string Location { get; set;}
-            public string Tags { get; set;}
-            public int ParenItem { get; set;}
-            public int UserId { get; set;}
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public string Date { get; set; }
+            public string AuxDate { get; set; }
+            public string Location { get; set; }
+            public string Tags { get; set; }
+            public int ParenItem { get; set; }
+            public int UserId { get; set; }
         }
 
         /// <summary>
@@ -80,9 +82,9 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// </summary>
         private struct Simple_tag
         {
-            public int Id { get; set;}
-            public string Name { get; set;}
-            public string Events { get; set;}
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Events { get; set; }
         }
 
         public AppTheme Theme
@@ -107,7 +109,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// </summary>
         public ICommand PrivacyStatementCommand => _privacyStatementCommand ??= new RelayCommand(OnPrivacyStatement);
 
-        public SettingsViewModel(IOptions<AppConfig> config, IThemeSelectorService themeSelectorService, ISystemService systemService, IApplicationInfoService applicationInfoService, ArchivatorDbContext context)
+        public SettingsViewModel(IOptions<AppConfig> config, IThemeSelectorService themeSelectorService,
+            ISystemService systemService, IApplicationInfoService applicationInfoService, ArchivatorDbContext context)
         {
             _config = config.Value;
             _themeSelectorService = themeSelectorService;
@@ -128,7 +131,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
         private void OnSetTheme(string themeName)
         {
-            var theme = (AppTheme)Enum.Parse(typeof(AppTheme), themeName);
+            var theme = (AppTheme) Enum.Parse(typeof(AppTheme), themeName);
             _themeSelectorService.SetTheme(theme);
         }
 
@@ -169,7 +172,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             }
             else
             {
-                MessageBox.Show("Export has been cancelled by user!", "Export cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Export has been cancelled by user!", "Export cancelled", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
             }
         }
 
@@ -188,6 +192,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                     Events = item.Events.Aggregate("", (current, o) => current + ";" + o.Id),
                     Files = item.Files.Aggregate("", (current, o) => current + ";" + o.Id),
                     ItemId = item.Id,
+                    SecondaryId = item.AlternateKey,
                     RelatedItems = item.RelatedItems.Aggregate("", (current, o) => current + ";" + o.ToId),
                     UserId = item.UserId.ToString()
                 }).ToList();
@@ -243,6 +248,16 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                     Events = tag.Events.Aggregate("", (current, o) => current + ";" + o.EventId),
                     Name = tag.Name
                 }).ToList();
+        }
+
+        public async Task PurgeDatabase()
+        {
+            var choice = MessageBox.Show("Are you sure you want to delete the entire database? There is no way back!",
+                "!!!WARNING!!!", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (choice == MessageBoxResult.Yes)
+            {
+                await _context.Database.EnsureDeletedAsync();
+            }
         }
     }
 }

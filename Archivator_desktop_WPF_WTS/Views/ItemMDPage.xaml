@@ -7,6 +7,7 @@
     xmlns:viewModels="clr-namespace:Archivator_desktop_WPF_WTS.ViewModels"
     xmlns:entities="clr-namespace:ArchivatorDb.Entities;assembly=ArchivatorDb"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:extended="http://schemas.xceed.com/wpf/xaml/toolkit"
     x:Class="Archivator_desktop_WPF_WTS.Views.ItemMDPage"
     Style="{DynamicResource MahApps.Styles.Page}"
     mc:Ignorable="d"
@@ -31,8 +32,8 @@
                     Margin="{StaticResource SmallLeftMargin}"
                     VerticalAlignment="Center">
                     <TextBlock Style="{StaticResource MahApps.Styles.TextBlock.Watermark}" Text="{Binding AlternateKey, Mode=OneWay}"/>
-                    <TextBlock Style="{StaticResource ListTitleStyle}" Text="{Binding Name}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxWidth="150" MaxHeight="20" HorizontalAlignment="Left"/>
-                    <TextBlock Style="{StaticResource ListSubTitleStyle}" Text="{Binding Description}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxWidth="190" MaxHeight="20" HorizontalAlignment="Left" />
+                    <TextBlock Style="{StaticResource ListTitleStyle}" Text="{Binding Name}" TextWrapping="Wrap" MaxWidth="150" MaxHeight="20" HorizontalAlignment="Left"/>
+                    <TextBlock Style="{StaticResource ListSubTitleStyle}" Text="{Binding Description}" TextWrapping="Wrap" MaxWidth="190" MaxHeight="20" HorizontalAlignment="Left" />
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -130,9 +131,16 @@
                 <RowDefinition Height="40" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock
+            <DockPanel>
+                <TextBlock
                 Style="{StaticResource PageTitleStyle}"
-                Text="{x:Static strings:Resources.ItemMDPageTitle}" />
+                Text="{x:Static strings:Resources.ItemMDPageTitle}" HorizontalAlignment="Left" />
+                <extended:DropDownButton Background="{DynamicResource MahApps.Brushes.Control.Background}" Width="94">
+                    <extended:DropDownButton.DropDownContent>
+                         <extended:ColorCanvas />
+                     </extended:DropDownButton.DropDownContent>
+                </extended:DropDownButton>
+            </DockPanel>
             <TextBox Grid.Row="1" mah:TextBoxHelper.Watermark="Search"
                      Text="{Binding SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      VerticalAlignment="Top" Margin="5,0,0,0"/>

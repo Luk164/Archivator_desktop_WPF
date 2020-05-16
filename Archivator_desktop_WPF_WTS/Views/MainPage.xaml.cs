@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -131,12 +127,12 @@ namespace Archivator_desktop_WPF_WTS.Views
                 var fileInfo = new FileInfo(filePath);
                 if (fileInfo.Length > StaticUtilities.MAX_FILE_SIZE)
                 {
-                    MessageBox.Show($"File \"{System.IO.Path.GetFileName(filePath)}\" skipped because it was too large. Maximum allowed size is 25MB.\nThis file is {(fileInfo.Length - StaticUtilities.MAX_FILE_SIZE)} bytes over this limit.");
+                    MessageBox.Show($"File \"{Path.GetFileName(filePath)}\" skipped because it was too large. Maximum allowed size is 25MB.\nThis file is {(fileInfo.Length - StaticUtilities.MAX_FILE_SIZE)} bytes over this limit.");
                 }
                 tasks.Add(Task.Run(() => {
-                    var newFileEntity = new FileEntity()
+                    var newFileEntity = new FileEntity
                     {
-                        FileName = System.IO.Path.GetFileName(filePath),
+                        FileName = Path.GetFileName(filePath),
                         Data=File.ReadAllBytes(filePath)
                     };
 
@@ -160,28 +156,8 @@ namespace Archivator_desktop_WPF_WTS.Views
             return results;
         }
 
-        /// <summary>
-        /// WIP printing system
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button_Click(object sender, RoutedEventArgs e)
-        {
-            PrintDialog dialog = new PrintDialog();
-            if (dialog.ShowDialog() == true)
-            {
-                //Size pageSize = new Size(dialog.PrintableAreaWidth , dialog.PrintableAreaHeight );
-                //bt_submit.Measure(pageSize);
-                dialog.PrintVisual(dg_files, "Report");
-            }
-        }
-
         private void Selector_OnItemSelectionChanged(object sender, ItemSelectionChangedEventArgs e)
         {
-            //var listOfSelectedTags = ((CheckComboBox)sender).SelectedItems.Cast<Tag>().ToList();
-
-            //var test = (ObservableCollection<object>) ((CheckComboBox)sender).SelectedItems;
-
             if (!(((CheckComboBox)sender).DataContext is EventEntity eventEntity))
             {
                 return;
@@ -202,6 +178,11 @@ namespace Archivator_desktop_WPF_WTS.Views
             e.Handled = Regex.IsMatch(e.Text, "[^0-9]+");
         }
 
+        private void Tb_PreviewTextInput_5Max(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = ((TextBox) sender).Text.Length > 5;
+        }
+
         private void Tb_new_tag_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -209,6 +190,11 @@ namespace Archivator_desktop_WPF_WTS.Views
                 ((MainViewModel) DataContext).CreateTag(((TextBox) sender).Text);
                 ((TextBox) sender).Clear();
             }
+        }
+
+        private void Bt_DescEditor(object sender, RoutedEventArgs e)
+        {
+            ((MainViewModel) DataContext).ShowBigEditor();
         }
     }
 }

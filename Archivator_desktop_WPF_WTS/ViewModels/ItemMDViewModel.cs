@@ -187,6 +187,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         public void PrintSelected()
         {
             StaticUtilities.PrintObject(Selected);
+            Selected.TicketPrintDateTime = DateTime.Now;
+            _context.SaveChangesAsync();
         }
     }
 }

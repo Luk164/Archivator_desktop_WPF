@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Archivator_desktop_WPF_WTS.Migrations
 {
-    public partial class newMig : Migration
+    public partial class Remake : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,13 +14,19 @@ namespace Archivator_desktop_WPF_WTS.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(maxLength: 255, nullable: false),
-                    Description = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(maxLength: 32500, nullable: false),
                     UserId = table.Column<int>(nullable: false),
-                    CreateDateTime = table.Column<DateTime>(nullable: false)
+                    CreateDateTime = table.Column<DateTime>(nullable: false),
+                    ModifyDateTime = table.Column<DateTime>(nullable: false),
+                    TicketPrintDateTime = table.Column<DateTime>(nullable: true),
+                    Category = table.Column<string>(nullable: false),
+                    InternalId = table.Column<int>(nullable: false),
+                    SubCategory = table.Column<string>(maxLength: 5, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Items", x => x.Id);
+                    table.UniqueConstraint("AK_Items_Category_InternalId_SubCategory", x => new { x.Category, x.InternalId, x.SubCategory });
                 });
 
             migrationBuilder.CreateTable(
@@ -29,7 +35,7 @@ namespace Archivator_desktop_WPF_WTS.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 255, nullable: true)
+                    Name = table.Column<string>(maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -43,7 +49,7 @@ namespace Archivator_desktop_WPF_WTS.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(maxLength: 255, nullable: true),
-                    Description = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(maxLength: 32500, nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
                     AuxDate = table.Column<string>(nullable: true),
                     Location = table.Column<string>(nullable: true),
@@ -69,7 +75,7 @@ namespace Archivator_desktop_WPF_WTS.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FileName = table.Column<string>(maxLength: 255, nullable: false),
                     Data = table.Column<byte[]>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(maxLength: 32500, nullable: true),
                     ParentItemId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -153,8 +159,7 @@ namespace Archivator_desktop_WPF_WTS.Migrations
                 name: "IX_Tags_Name",
                 table: "Tags",
                 column: "Name",
-                unique: true,
-                filter: "[Name] IS NOT NULL");
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

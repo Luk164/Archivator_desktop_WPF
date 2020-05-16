@@ -5,6 +5,7 @@ using System.Windows;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;
 using Archivator_desktop_WPF_WTS.Models;
+using Archivator_desktop_WPF_WTS.Views;
 using ArchivatorDb;
 using ArchivatorDb.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
             _context = context ?? throw new Exception("ERROR: DB context is null!");
             CurrItem = _context.CreateProxy<Item>();
+            CurrItem.InternalId = _context.Items.Count() + 1;
             _context.Add(CurrItem);
             Tags = _context.Tags.ToList();
         }
@@ -65,6 +67,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             _context.DisposeAsync();
             _context = model.context;
             CurrItem = item;
+            CurrItem.ModifyDateTime = DateTime.Now;
 
             foreach (var eventEntity in CurrItem.Events)
             {
@@ -102,6 +105,12 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
             _context.Add(newTag);
             Tags.Add(newTag);
+        }
+
+        public void ShowBigEditor()
+        {
+            Window test = new Window {Content = new BigEditor{DataContext = CurrItem}};
+            test.Show();
         }
     }
 }

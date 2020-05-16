@@ -31,8 +31,6 @@ namespace Archivator_desktop_WPF_WTS.Views
             Application.Current.Shutdown();
         }
 
-
-
         // TODO bring back simple connection string change
         //private void Tb_connection_string_OnKeyUp(object sender, KeyEventArgs e)
         //{
@@ -47,5 +45,14 @@ namespace Archivator_desktop_WPF_WTS.Views
         //            "Faulty connection string");
         //    }
         //}
+
+        private async void bt_purge_database(object sender, RoutedEventArgs e)
+        {
+            Purge_MetroProgressBar.IsIndeterminate = true;
+            await ((SettingsViewModel)DataContext).PurgeDatabase();
+            Purge_MetroProgressBar.IsIndeterminate = false;
+            MessageBox.Show("Database deleted, program will now exit", "Database deleted", MessageBoxButton.OK);
+            Application.Current.Shutdown();
+        }
     }
 }

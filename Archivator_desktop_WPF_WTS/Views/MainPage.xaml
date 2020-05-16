@@ -14,7 +14,8 @@
     d:DesignHeight="450" d:DesignWidth="800"
     AllowDrop="True"
     d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
-    <Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="48" />
             <RowDefinition Height="*" />
@@ -40,13 +41,21 @@
             <StackPanel Margin="0,0,0,10" HorizontalAlignment="Stretch" Grid.Column="0">
                 <Label Content="Category + ID"/>
                 <DockPanel>
-                    <ComboBox x:Name="ComboBox" DockPanel.Dock="Left" ItemsSource="{Binding Alphabet}" SelectedItem="{Binding CurrItem.Category, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ComboBox x:Name="ComboBox" DockPanel.Dock="Left" ItemsSource="{Binding Alphabet}" SelectedItem="{Binding CurrItem.Category, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBox DockPanel.Dock="Left" Text="{Binding CurrItem.InternalId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="ID" PreviewTextInput="Tb_PreviewTextInput_numbersOnly" HorizontalAlignment="Left" Width="120"/>
-                    <TextBox DockPanel.Dock="Left" Text="{Binding CurrItem.SubCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="Sub" PreviewTextInput="Tb_PreviewTextInput_numbersOnly" HorizontalAlignment="Stretch"/>
+                    <TextBox DockPanel.Dock="Left" Text="{Binding CurrItem.SubCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CharacterCasing="Upper" mah:TextBoxHelper.Watermark="Sub" PreviewTextInput="Tb_PreviewTextInput_5Max" HorizontalAlignment="Stretch"/>
                 </DockPanel>
                 <Label Content="Name" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <TextBox mah:TextBoxHelper.Watermark="Name" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding CurrItem.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <Label Content="Description" Margin="0,15,0,0"/>
+                <TextBox 
+                    mah:TextBoxHelper.Watermark="Name" 
+                    HorizontalAlignment="Stretch" 
+                    TextWrapping="Wrap" 
+                    VerticalAlignment="Top" 
+                    Text="{Binding CurrItem.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <DockPanel>
+                    <Label Content="Description" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
+                    <Button Click="Bt_DescEditor"  Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" DockPanel.Dock="Right" Content="&#xE740;" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Right" FontSize="20"/>
+                </DockPanel>
                 <TextBox Text="{Binding CurrItem.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          mah:TextBoxHelper.Watermark="Description"
                          AcceptsReturn="True"
@@ -55,7 +64,10 @@
                          mah:TextBoxHelper.IsSpellCheckContextMenuEnabled="True"
                          HorizontalScrollBarVisibility="Disabled"
                          VerticalScrollBarVisibility="Auto" Height="150"/>
-            </StackPanel>
+                    <TextBlock Style="{StaticResource BodyTextStyle}" Margin="{StaticResource XSmallLeftMargin}" Text="{Binding CurrItem.CreateDateTime, FallbackValue=Created: x.y.zzzz d:t, Mode=OneWay, StringFormat=Created: {0:g}}"/>
+                    <TextBlock Style="{StaticResource BodyTextStyle}" Margin="{StaticResource XSmallLeftMargin}" Text="{Binding CurrItem.ModifyDateTime, FallbackValue=Modified: x.y.zzzz d:t, Mode=OneWay, StringFormat=Modified: {0:g}}"/>
+                   <TextBlock Style="{StaticResource BodyTextStyle}" Margin="{StaticResource XSmallLeftMargin}" Text="{Binding CurrItem.TicketPrintDateTime, FallbackValue=Ticket printed: x.y.zzzz d:t, Mode=OneWay, StringFormat=Ticket printed: {0:g}, TargetNullValue=Ticket printed: Never}"/>
+                </StackPanel>
             <DockPanel Grid.Column="1">
                 <DataGrid x:Name="dg_files" mah:DataGridHelper.EnableCellEditAssist="True" DockPanel.Dock="Top" ItemsSource="{Binding CurrItem.Files, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Drop="files_Drop_action" Margin="10,10,10,0" IsSynchronizedWithCurrentItem="True" CanUserAddRows="False" AutomationProperties.Name="Files" AutoGenerateColumns="False" HorizontalAlignment="Right" Height="190" VerticalAlignment="Top">
                     <DataGrid.Columns>
@@ -116,4 +128,5 @@
             -->
         </Grid>
     </Grid>
+    </ScrollViewer>
 </Page>
