@@ -3,4 +3,14 @@
   <PropertyGroup>
     <_LastSelectedProfileId>D:\User_files\Projekty\C#\Archivator_desktop_WPF_WTS\Archivator_desktop_WPF_WTS\Properties\PublishProfiles\FolderProfileSelfContained.pubxml</_LastSelectedProfileId>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="Views\BigEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\BigEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
 </Project>

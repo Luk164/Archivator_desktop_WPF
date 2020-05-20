@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Printing;
 using System.Windows;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;

@@ -18,13 +18,16 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <!-- Accent and AppTheme setting -->
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Blue.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Blue.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:DataToHRStringConverter x:Key="DataConverter" />
             <converters:FileNameToTypeConverter x:Key="NameToTypeConverter" />
-            <converters:TagListToStringConverter x:Key="TagListToStringConverter"/>
-            <converters:DbObjectToQRCodeConverter x:Key="DbObjectToQrCodeConverter"/>
+            <converters:TagListToStringConverter x:Key="TagListToStringConverter" />
+            <converters:DbObjectToQRCodeConverter x:Key="DbObjectToQrCodeConverter" />
+            <converters:ListToBooleanHasContentConverter x:Key="ListToBooleanHasContentConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
