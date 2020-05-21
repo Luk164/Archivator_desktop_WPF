@@ -18,6 +18,7 @@ namespace Archivator_desktop_WPF_WTS.Services
         public PageService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            Configure<AboutPageViewModel, AboutPage>();
             Configure<MainViewModel, MainPage>();
             Configure<ItemMDViewModel, ItemMDPage>();
             Configure<TagsViewModel, MasterDetailPage>();

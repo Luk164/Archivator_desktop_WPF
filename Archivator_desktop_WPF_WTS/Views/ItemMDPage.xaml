@@ -43,7 +43,6 @@
                 </StackPanel>
             </Grid>
         </DataTemplate>
-
         <DataTemplate x:Key="DetailTemplate" DataType="viewModels:ItemMDViewModel">
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="Auto" Margin="0,0,0,0">

@@ -73,7 +73,7 @@ namespace Archivator_desktop_WPF_WTS.Services
         {
             if (sender is Frame frame)
             {
-                bool clearNavigation = (bool)frame.Tag;
+                var clearNavigation = (bool)frame.Tag;
                 if (clearNavigation)
                 {
                     frame.CleanNavigation();

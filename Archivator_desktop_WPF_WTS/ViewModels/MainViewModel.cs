@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Printing;
 using System.Windows;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;
@@ -51,7 +50,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         public void SaveChanges()
         {
             if (_context.Items.Any(i =>
-                i.InternalId == CurrItem.InternalId))
+                i.InternalId == CurrItem.InternalId) && CurrItem.Id == 0)
             {
                 MessageBox.Show(
                     "ERROR: Item with this internal ID already exists in database! Please choose a different one!",

@@ -34,7 +34,7 @@ namespace Archivator_desktop_WPF_WTS.Services
             _shellWindow = _serviceProvider.GetService(typeof(IShellWindow)) as IShellWindow;
             _navigationService.Initialize(_shellWindow.GetNavigationFrame());
             _shellWindow.ShowWindow();
-            _navigationService.NavigateTo(typeof(MainViewModel).FullName);
+            _navigationService.NavigateTo(typeof(AboutPageViewModel).FullName); //TODO Default set here
 
             // Tasks after activation
             await StartupAsync();

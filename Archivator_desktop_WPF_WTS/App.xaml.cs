@@ -131,6 +131,9 @@ namespace Archivator_desktop_WPF_WTS
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
 
+            services.AddTransient<AboutPageViewModel>();
+            services.AddTransient<AboutPage>();
+
             // Configuration
             services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
         }
@@ -152,6 +155,7 @@ namespace Archivator_desktop_WPF_WTS
     /// <summary>
     /// Allows Entity Framework to find and migrate DbContext. Only used at design time!
     /// </summary>
+    // ReSharper disable once UnusedType.Global Used in design time
     public class DbContextFactory : IDesignTimeDbContextFactory<ArchivatorDbContext>
     {
         public ArchivatorDbContext CreateDbContext(string[] args)
