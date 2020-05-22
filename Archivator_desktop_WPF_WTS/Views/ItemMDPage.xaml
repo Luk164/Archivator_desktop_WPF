@@ -6,7 +6,6 @@
     xmlns:strings="clr-namespace:Archivator_desktop_WPF_WTS.Strings"
     xmlns:viewModels="clr-namespace:Archivator_desktop_WPF_WTS.ViewModels"
     xmlns:entities="clr-namespace:ArchivatorDb.Entities;assembly=ArchivatorDb"
-    xmlns:Converters="clr-namespace:Archivator_desktop_WPF_WTS.Converters"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="Archivator_desktop_WPF_WTS.Views.ItemMDPage"
     Style="{DynamicResource MahApps.Styles.Page}"
@@ -15,35 +14,134 @@
     d:DesignWidth="800"
     d:DataContext="{d:DesignInstance {x:Type viewModels:ItemMDViewModel}}">
     <Page.Resources>
-        <Converters:TagListToStringConverter x:Key="TagListToStringConverter"/>
         <DataTemplate x:Key="ItemTemplate" DataType="entities:Item">
             <Grid Height="60">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <TextBlock
-                    Grid.Column="0"
-                    Text="&#xE12B;"
-                    Style="{StaticResource MediumIconStyle}"
-                    Margin="{StaticResource XSmallLeftMargin}"
-                    AutomationProperties.Name="List editedObject icon" />
+                <DockPanel Grid.Column="0">
+                    <TextBlock
+                        DockPanel.Dock="Top"
+                        Text="&#xE12B;"
+                        Style="{StaticResource MediumIconStyle}"
+                        Margin="{StaticResource XSmallLeftMargin}"
+                        AutomationProperties.Name="List editedObject icon" />
+                    <CheckBox DockPanel.Dock="Bottom" Content="Select" Unchecked="tb_item_selection_unchecked"
+                              Checked="tb_item_selection_checked" />
+                </DockPanel>
                 <StackPanel
                     Grid.Column="1"
                     Margin="{StaticResource SmallLeftMargin}"
                     VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource ListTitleStyle}" Text="{Binding Name}" />
-                    <TextBlock Style="{StaticResource ListSubTitleStyle}" Text="{Binding Description}" />
+                    <TextBlock Style="{StaticResource MahApps.Styles.TextBlock.Watermark}"
+                               Text="{Binding AlternateKey, Mode=OneWay}" />
+                    <TextBlock Style="{StaticResource ListTitleStyle}" Text="{Binding Name}" TextWrapping="Wrap"
+                               MaxWidth="150" MaxHeight="20" HorizontalAlignment="Left" />
+                    <TextBlock Style="{StaticResource ListSubTitleStyle}" Text="{Binding Description}"
+                               TextWrapping="Wrap" MaxWidth="190" MaxHeight="20" HorizontalAlignment="Left" />
                 </StackPanel>
             </Grid>
         </DataTemplate>
-
         <DataTemplate x:Key="DetailTemplate" DataType="viewModels:ItemMDViewModel">
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="Auto" Margin="0,0,0,0">
-                    <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" Content="&#xE70F;" Click="bt_edit" MinWidth="20" MinHeight="20" FontFamily="Segoe MDL2 Assets" FontSize="24"/>
-                    <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" Content="&#xE74D;" Click="bt_delete" FontFamily="Segoe MDL2 Assets" FontSize="24"/>
-                    <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}" Content="&#xE749;" Click="bt_print" FontFamily="Segoe MDL2 Assets" FontSize="24"/>
+                    <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
+                            Width="{Binding Content.(StackPanel.Width), RelativeSource={RelativeSource Self}}"
+                            Click="bt_edit" MinWidth="20" MinHeight="20" FontSize="24">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Label FontFamily="Segoe MDL2 Assets" Content="&#xE70F;" HorizontalAlignment="Left"
+                                   VerticalAlignment="Stretch" />
+                            <TextBlock Text="Edit" FontSize="22" Margin="0,0,5,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <mah:DropDownButton Margin="0,0,0,0"
+                                        Content="Printing"
+                                        HorizontalAlignment="Right"
+                                        HorizontalContentAlignment="Left"
+                                        Style="{StaticResource MahApps.Styles.DropDownButton.WindowCommands}"
+                                        FontSize="22">
+                        <mah:DropDownButton.Icon>
+                            <TextBlock Text="&#xE749;" FontFamily="Segoe MDL2 Assets" />
+                        </mah:DropDownButton.Icon>
+                        <mah:DropDownButton.Items>
+                            <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
+                                    Click="bt_print_selected_single" FontSize="24" HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Left"
+                                    Width="{Binding Content.(StackPanel.Width), RelativeSource={RelativeSource Self}}">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <Label FontFamily="Segoe MDL2 Assets" Content="&#xE8A5;" HorizontalAlignment="Left" />
+                                    <TextBlock Text="Print (this)" FontSize="14" />
+                                </StackPanel>
+                            </Button>
+                            <mah:Badged Badge="{Binding Items.Count}">
+                                <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
+                                        Click="bt_print_all" FontSize="24" HorizontalAlignment="Left"
+                                        HorizontalContentAlignment="Left"
+                                        Width="{Binding Content.(StackPanel.Width), RelativeSource={RelativeSource Self}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label FontFamily="Segoe MDL2 Assets" Content="&#xF571;" />
+                                        <TextBlock Text="Print all" FontSize="14" />
+                                    </StackPanel>
+                                </Button>
+                            </mah:Badged>
+                            <mah:Badged Badge="{Binding ItemsWithoutTickets.Count}">
+                                <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
+                                        Click="bt_print_missing" FontSize="24" HorizontalAlignment="Left"
+                                        HorizontalContentAlignment="Left"
+                                        Width="{Binding Content.(StackPanel.Width), RelativeSource={RelativeSource Self}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label FontFamily="Segoe MDL2 Assets" Content="&#xE71C;" />
+                                        <TextBlock Text="Print missing" FontSize="14" />
+                                    </StackPanel>
+                                </Button>
+                            </mah:Badged>
+                            <mah:Badged Badge="{Binding SelectedItems.Count}">
+                                <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
+                                        Click="bt_print_selection" FontSize="24" HorizontalAlignment="Left"
+                                        HorizontalContentAlignment="Left"
+                                        IsEnabled="{Binding SelectedItems, Converter={StaticResource ListToBooleanHasContentConverter}}"
+                                        Width="{Binding Content.(StackPanel.Width), RelativeSource={RelativeSource Self}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label FontFamily="Segoe MDL2 Assets" Content="&#xE762;" />
+                                        <TextBlock Text="Print selection" FontSize="14" />
+                                    </StackPanel>
+                                </Button>
+                            </mah:Badged>
+                        </mah:DropDownButton.Items>
+                    </mah:DropDownButton>
+                    <mah:DropDownButton Margin="0,0,0,0"
+                                        Content="Delete"
+                                        HorizontalAlignment="Right"
+                                        HorizontalContentAlignment="Left"
+                                        Style="{StaticResource MahApps.Styles.DropDownButton.WindowCommands}"
+                                        FontSize="22">
+                        <mah:DropDownButton.Icon>
+                            <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" />
+                        </mah:DropDownButton.Icon>
+                        <mah:DropDownButton.Items>
+                            <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
+                                    Click="bt_delete" FontSize="24"
+                                    Width="{Binding Content.(StackPanel.Width), RelativeSource={RelativeSource Self}}"
+                                    HorizontalContentAlignment="Left" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label FontFamily="Segoe MDL2 Assets" Content="&#xE74D;" />
+                                    <TextBlock Text="Delete (this)" FontSize="14" />
+                                </StackPanel>
+                            </Button>
+                            <mah:Badged Badge="{Binding SelectedItems.Count}">
+                                <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
+                                        Click="bt_delete_selection" FontSize="24" IsEnabled="{Binding SelectedItems, Converter={StaticResource ListToBooleanHasContentConverter}}"
+                                        Width="{Binding Content.(StackPanel.Width), RelativeSource={RelativeSource Self}}"
+                                        HorizontalAlignment="Left" HorizontalContentAlignment="Left">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label FontFamily="Segoe MDL2 Assets" Content="&#xE74D;" />
+                                        <TextBlock Text="Delete selection" FontSize="14" />
+                                    </StackPanel>
+                                </Button>
+                            </mah:Badged>
+                        </mah:DropDownButton.Items>
+                    </mah:DropDownButton>
                 </StackPanel>
                 <ScrollViewer
                     x:Name="ForegroundElement"
@@ -51,17 +149,36 @@
                     VerticalScrollBarVisibility="Auto"
                     CanContentScroll="False">
                     <StackPanel HorizontalAlignment="Left" Margin="{StaticResource MediumLeftTopRightBottomMargin}">
+                        <TextBlock
+                            DockPanel.Dock="Top" Text="{Binding Selected.AlternateKey}"
+                            Margin="{StaticResource SmallLeftMargin}"
+                            Style="{StaticResource MahApps.Styles.TextBlock.Watermark}" HorizontalAlignment="Center"
+                            VerticalAlignment="Top" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                            <TextBlock
-                                Text="&#xE12B;"
-                                Style="{StaticResource BigIconStyle}"
-                                AutomationProperties.Name="Detail icon" />
-                            <TextBlock
-                                Margin="{StaticResource SmallLeftMargin}"
-                                Text="{Binding Selected.Name, Mode=OneWay}"
-                                Style="{StaticResource PageTitleStyle}" />
+                            <DockPanel>
+                                <TextBlock
+                                    DockPanel.Dock="Left"
+                                    Text="&#xE12B;"
+                                    Style="{StaticResource BigIconStyle}"
+                                    AutomationProperties.Name="Detail icon" />
+                                <TextBlock
+                                    DockPanel.Dock="Left"
+                                    Margin="{StaticResource SmallLeftMargin}"
+                                    Text="{Binding Selected.Name, Mode=OneWay}"
+                                    Style="{StaticResource PageTitleStyle}" />
+                            </DockPanel>
                         </StackPanel>
                         <StackPanel Margin="{StaticResource SmallTopMargin}">
+                            <TextBlock Style="{StaticResource BodyTextStyle}"
+                                       Margin="{StaticResource XSmallLeftMargin}"
+                                       Text="{Binding Selected.CreateDateTime, FallbackValue=Created: x.y.zzzz d:t, Mode=OneWay, StringFormat=Created: {0:g}}" />
+                            <TextBlock Style="{StaticResource BodyTextStyle}"
+                                       Margin="{StaticResource XSmallLeftMargin}"
+                                       Text="{Binding Selected.ModifyDateTime, FallbackValue=Modified: x.y.zzzz d:t, Mode=OneWay, StringFormat=Modified: {0:g}}" />
+                            <TextBlock Style="{StaticResource BodyTextStyle}"
+                                       Margin="{StaticResource XSmallLeftMargin}"
+                                       Text="{Binding Selected.TicketPrintDateTime, FallbackValue=Ticket printed: x.y.zzzz d:t, Mode=OneWay, StringFormat=Ticket printed: {0:g}, TargetNullValue=Ticket printed: Never}" />
+
                             <TextBlock
                                 Margin="{StaticResource MediumTopMargin}"
                                 Style="{StaticResource SubtitleTextStyle}"
@@ -76,11 +193,18 @@
                                       IsSynchronizedWithCurrentItem="True"
                                       MouseDoubleClick="Control_OnMouseDoubleClick"
                                       SelectedItem="{Binding SelectedFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                      IsReadOnly="True" CanUserAddRows="False" AutomationProperties.Name="Files" AutoGenerateColumns="False" HorizontalAlignment="Right" Height="Auto" VerticalAlignment="Top">
+                                      IsReadOnly="True" CanUserAddRows="False" AutomationProperties.Name="Files"
+                                      AutoGenerateColumns="False" HorizontalAlignment="Right" Height="Auto"
+                                      VerticalAlignment="Top">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="FileName" Binding="{Binding FileName, UpdateSourceTrigger=PropertyChanged}"/>
-                                    <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
-                                    <DataGridTextColumn Header="Size" Binding="{Binding Data.Length, Converter={StaticResource DataConverter}, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="FileName"
+                                                        Binding="{Binding FileName, UpdateSourceTrigger=PropertyChanged}" />
+                                    <DataGridTextColumn Header="Description"
+                                                        Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                                                        Width="*" />
+                                    <DataGridTextColumn Header="Size"
+                                                        Binding="{Binding Data.Length, Converter={StaticResource DataConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                                        IsReadOnly="True" />
                                     <DataGridTemplateColumn Header="QRcode">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -88,22 +212,33 @@
                                                         Click="ButtonBase_OnClick"
                                                         Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
                                                         FontFamily="Segoe MDL2 Assets"
-                                                        FontSize="20"/>
+                                                        FontSize="20" />
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
-                            <Label Content="Events" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <DataGrid DockPanel.Dock="Bottom" ItemsSource="{Binding Selected.Events, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" AllowDrop="False" AutomationProperties.Name="Events" Margin="10,10,10,0" VerticalAlignment="Stretch" Height="110">
+                            <Label Content="Events" FontWeight="Bold" HorizontalAlignment="Left"
+                                   VerticalAlignment="Top" />
+                            <DataGrid DockPanel.Dock="Bottom"
+                                      ItemsSource="{Binding Selected.Events, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                      VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" IsReadOnly="True"
+                                      CanUserAddRows="False" AllowDrop="False" AutomationProperties.Name="Events"
+                                      Margin="10,10,10,0" VerticalAlignment="Stretch" Height="110">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
-                                    <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
-                                    <DataGridTextColumn Header="Date" Binding="{Binding Date, UpdateSourceTrigger=PropertyChanged}" />
-                                    <DataGridTextColumn Header="AuxDate" Binding="{Binding AuxDate, UpdateSourceTrigger=PropertyChanged}" />
-                                    <DataGridTextColumn Header="Location" Binding="{Binding Location, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridTextColumn Header="Name"
+                                                        Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                                    <DataGridTextColumn Header="Description"
+                                                        Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                                                        Width="*" />
+                                    <DataGridTextColumn Header="Date"
+                                                        Binding="{Binding Date, Mode=OneWay, StringFormat=\{0:g\}}" />
+                                    <DataGridTextColumn Header="AuxDate"
+                                                        Binding="{Binding AuxDate, UpdateSourceTrigger=PropertyChanged}" />
+                                    <DataGridTextColumn Header="Location"
+                                                        Binding="{Binding Location, UpdateSourceTrigger=PropertyChanged}" />
                                     <DataGridTextColumn Header="Tags"
-                                                        Binding="{Binding Tags, Converter={StaticResource TagListToStringConverter}, FallbackValue=N/A, Mode=OneWay, TargetNullValue=N/A}"/>
+                                                        Binding="{Binding Tags, Converter={StaticResource TagListToStringConverter}, FallbackValue=N/A, Mode=OneWay, TargetNullValue=N/A}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
@@ -120,16 +255,22 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="48" />
+                <RowDefinition Height="40" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock
-                Style="{StaticResource PageTitleStyle}"
-                Text="{x:Static strings:Resources.ItemMDPageTitle}" />
+            <DockPanel>
+                <TextBlock
+                    Style="{StaticResource PageTitleStyle}"
+                    Text="{x:Static strings:Resources.ItemMDPageTitle}" HorizontalAlignment="Left" />
+            </DockPanel>
+            <TextBox Grid.Row="1" mah:TextBoxHelper.Watermark="Search"
+                     Text="{Binding SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     VerticalAlignment="Top" Margin="5,0,0,0" />
             <ListView
-                Grid.Row="1"
-                ItemsSource="{Binding Items}"
+                Grid.Row="2"
+                ItemsSource="{Binding ItemsViewFiltered}"
                 ItemTemplate="{StaticResource ItemTemplate}"
-                SelectedItem="{Binding Selected, Mode=TwoWay}" />
+                SelectedItem="{Binding Selected, Mode=TwoWay}" VerticalAlignment="Stretch" />
         </Grid>
         <ContentControl
             Grid.Column="1"

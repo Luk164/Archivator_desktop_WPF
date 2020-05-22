@@ -1,4 +1,12 @@
-﻿using Archivator_desktop_WPF_WTS.Contracts.Services;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Data;
+using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;
 using Archivator_desktop_WPF_WTS.Models;
@@ -22,6 +30,13 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private readonly ArchivatorDbContext _context;
         private readonly INavigationService _navigationService;
         private FileEntity _selectedFile;
+        private string _searchString;
+
+        public List<Item> SelectedItems { get; } = new List<Item>();
+
+        public List<Item> Items => _context.Items.ToList();
+
+        public List<Item> ItemsWithoutTickets => _context.Items.Where(item => item.TicketPrintDateTime == null).ToList();
 
         /// <summary>
         /// Proxy for accessing selected file object. It cannot be accessed directly.
@@ -30,6 +45,23 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
             get => _selectedFile;
             set => Set(ref _selectedFile, value);
+        }
+
+        /// <summary>
+        /// Accessor for value used as a filter parameter for searching items. Setter also applies filter to ItemsViewFiltered.
+        /// </summary>
+        public string SearchString
+        {
+            get => _searchString;
+            set
+            {
+                _searchString = value;
+                ItemsViewFiltered.Filter = o => SearchString == null
+                                                || ((Item) o).Name.IndexOf(SearchString,
+                                                    StringComparison.OrdinalIgnoreCase) != -1
+                                                || ((Item) o).Description.IndexOf(SearchString,
+                                                    StringComparison.OrdinalIgnoreCase) != -1;
+            }
         }
 
         /// <summary>
@@ -44,7 +76,12 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// <summary>
         /// List of items used in GUI
         /// </summary>
-        public ObservableCollection<Item> Items { get; private set; }
+        private ObservableCollection<Item> _items;
+
+        /// <summary>
+        /// Allows us to search list of items
+        /// </summary>
+        public ICollectionView ItemsViewFiltered => CollectionViewSource.GetDefaultView(_items);
 
         /// <summary>
         /// Constructor for Item master-detail viewmodel.
@@ -62,7 +99,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// </summary>
         public void EditSelected()
         {
-            _navigationService.NavigateTo(typeof(MainViewModel).FullName, new EditModel() { context = _context, editedObject = Selected });
+            _navigationService.NavigateTo(typeof(MainViewModel).FullName,
+                new EditModel() {context = _context, editedObject = Selected});
         }
 
         /// <summary>
@@ -72,19 +110,52 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
             try
             {
-                MessageBoxResult result = MessageBox.Show("Are you sure you want to delete this editedObject?", "Confirmation", MessageBoxButton.YesNo);
+                var result = MessageBox.Show("Are you sure you want to delete this item?", "Confirmation",
+                    MessageBoxButton.YesNo);
 
                 if (result == MessageBoxResult.Yes)
                 {
                     _context.Remove(Selected);
-                    Items.Remove(Selected);
-                    Selected = Items.FirstOrDefault() ?? new Item();
+                    _items.Remove(Selected);
+                    Selected = _items.FirstOrDefault() ?? new Item();
                     _context.SaveChanges();
                 }
             }
             catch (Exception e)
             {
-                MessageBox.Show("An unhandled exception just occurred: " + e.Message, "Exception Occured", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("An unhandled exception just occurred: " + e.Message, "Exception Occured",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        /// <summary>
+        /// Deletes all marked items.
+        /// </summary>
+        public void DeleteSelection()
+        {
+            try
+            {
+                var result = MessageBox.Show("Are you sure you want to delete all selected items? Selected count: " + SelectedItems.Count, "Confirmation",
+                    MessageBoxButton.YesNo);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    SelectedItems.AsParallel().ForAll(item =>
+                    {
+                        _context.Remove(item);
+                        _items.Remove(item);
+                        if (Selected == item)
+                        {
+                            Selected = _items.FirstOrDefault() ?? new Item();
+                        }
+                    });
+                    _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("An unhandled exception just occurred: " + e.Message, "Exception Occured",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -93,14 +164,15 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             try
             {
                 //Items = new ObservableCollection<Item>(_context.Items.AsNoTracking());
-                Items = new ObservableCollection<Item>(_context.Items);
+                _items = new ObservableCollection<Item>(_context.Items);
 
-                Selected = Items.FirstOrDefault() ?? new Item();
+                Selected = _items.FirstOrDefault() ?? new Item();
                 _context.SaveChanges();
             }
             catch (Exception e)
             {
-                MessageBox.Show("An unhandled exception just occurred: " + e.Message, "Exception Occured", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("An unhandled exception just occurred: " + e.Message, "Exception Occured",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 throw;
             }
         }
@@ -116,7 +188,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         {
             if (_selectedFile == null)
             {
-                MessageBox.Show("ERROR: No file selected!", "General error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show("ERROR: No file selected!", "General error", MessageBoxButton.OK,
+                    MessageBoxImage.Exclamation);
                 return;
             }
 
@@ -136,7 +209,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
                 if (saveFileDialog.FileName.IndexOfAny(Path.GetInvalidFileNameChars()) == -1)
                 {
-                    MessageBox.Show("Invalid character/s detected in fileName!\nInvalid characters: " + Path.GetInvalidFileNameChars());
+                    MessageBox.Show("Invalid character/s detected in fileName!\nInvalid characters: " +
+                                    Path.GetInvalidFileNameChars());
                 }
                 else
                 {
@@ -153,9 +227,71 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// <summary>
         /// Opens a print dialog for currently selected Item.
         /// </summary>
-        public void PrintSelected()
+        public void PrintSelectedItem()
         {
             StaticUtilities.PrintObject(Selected);
+            Selected.TicketPrintDateTime = DateTime.Now;
+            _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Print all items in database.
+        /// </summary>
+        public void PrintAll()
+        {
+            var result = MessageBox.Show(
+                "Are you sure you want to print all items in database? Current item count: " + _context.Items.Count(),
+                "Print all items", MessageBoxButton.YesNo, MessageBoxImage.Information);
+            if (result == MessageBoxResult.Yes)
+            {
+                foreach (Item item in _context.Items)
+                {
+                    StaticUtilities.PrintObject(item);
+                    item.TicketPrintDateTime = DateTime.Now;
+                }
+                _context.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Prints all items that were not yet printed.
+        /// </summary>
+        public void PrintMissing()
+        {
+            var toPrint = ItemsWithoutTickets;
+
+            var result = MessageBox.Show(
+                "Are you sure you want to print all items that do not have ticket yet? Current unprinted item count: " + toPrint.Count,
+                "Print all items", MessageBoxButton.YesNo, MessageBoxImage.Information);
+            if (result == MessageBoxResult.Yes)
+            {
+                StaticUtilities.PrintMultipleObjects(toPrint);
+                toPrint.AsParallel().ForAll(item => item.TicketPrintDateTime = DateTime.Now);
+                _context.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Prints all items that were selected by user.
+        /// </summary>
+        public void PrintSelection()
+        {
+            if (SelectedItems.Count == 0)
+            {
+                MessageBox.Show("No items selected", "Selected items printing", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                "Are you sure you want to print all items you have selected? Current unprinted item count: " + SelectedItems.Count,
+                "Print all items", MessageBoxButton.YesNo, MessageBoxImage.Information);
+            if (result == MessageBoxResult.Yes)
+            {
+                StaticUtilities.PrintMultipleObjects(SelectedItems);
+                SelectedItems.AsParallel().ForAll(item => item.TicketPrintDateTime = DateTime.Now);
+                _context.SaveChangesAsync();
+            }
         }
     }
 }

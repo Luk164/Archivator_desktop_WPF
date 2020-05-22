@@ -30,7 +30,7 @@
                     Grid.Column="1"
                     Margin="{StaticResource SmallLeftMargin}"
                     VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource ListTitleStyle}" Text="{Binding Name}" />
+                    <TextBlock Style="{StaticResource ListTitleStyle}" Text="{Binding Name}" TextWrapping="Wrap" MaxWidth="190" />
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -86,11 +86,14 @@
                 Text="{x:Static strings:Resources.TagsMDPageTitle}" />
             <DockPanel Grid.Row="1">
                 <DockPanel DockPanel.Dock="Bottom">
-                    <TextBox x:Name="tb_new_tag" mah:TextBoxHelper.Watermark="Create new tag" DockPanel.Dock="Top" Margin="0,10,0,0" KeyUp="tb_new_tag_KeyUp"/>
+                    <TextBox mah:TextBoxHelper.Watermark="Create new tag" DockPanel.Dock="Top" Margin="0,10,0,0" KeyUp="tb_new_tag_KeyUp"/>
                 </DockPanel>
+                <TextBox mah:TextBoxHelper.Watermark="Search"
+                     Text="{Binding SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     VerticalAlignment="Top" Margin="5,0,5,0" DockPanel.Dock="Top"/>
                 <ListView
                     DockPanel.Dock="Top"
-                    ItemsSource="{Binding Items}"
+                    ItemsSource="{Binding TagsViewFiltered}"
                     ItemTemplate="{StaticResource ItemTemplate}"
                     SelectedItem="{Binding Selected, Mode=TwoWay}" />
             </DockPanel>

@@ -22,20 +22,22 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
         public HamburgerMenuItem SelectedMenuItem
         {
-            get { return _selectedMenuItem; }
-            set { Set(ref _selectedMenuItem, value); }
+            get => _selectedMenuItem;
+            set => Set(ref _selectedMenuItem, value);
         }
 
         public HamburgerMenuItem SelectedOptionsMenuItem
         {
-            get { return _selectedOptionsMenuItem; }
-            set { Set(ref _selectedOptionsMenuItem, value); }
+            get => _selectedOptionsMenuItem;
+            set => Set(ref _selectedOptionsMenuItem, value);
         }
 
         // TODO WTS: Change the icons and titles for all HamburgerMenuItems here.
         public ObservableCollection<HamburgerMenuItem> MenuItems { get; } =
             new ObservableCollection<HamburgerMenuItem>()
             {
+                new HamburgerMenuGlyphItem()
+                    {Label = Resources.ShellAboutPage, Glyph = "\uE946", TargetPageType = typeof(AboutPageViewModel)}, //info page
                 new HamburgerMenuGlyphItem()
                     {Label = Resources.ShellMainPage, Glyph = "\uECC8", TargetPageType = typeof(MainViewModel)},
                 new HamburgerMenuGlyphItem()

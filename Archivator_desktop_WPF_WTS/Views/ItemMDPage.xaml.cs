@@ -29,9 +29,9 @@ namespace Archivator_desktop_WPF_WTS.Views
             ((ItemMDViewModel)DataContext).SaveFile();
         }
 
-        private void bt_print(object sender, RoutedEventArgs e)
+        private void bt_print_selected_single(object sender, RoutedEventArgs e)
         {
-            ((ItemMDViewModel)DataContext).PrintSelected();
+            ((ItemMDViewModel) DataContext).PrintSelectedItem();
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
@@ -39,6 +39,52 @@ namespace Archivator_desktop_WPF_WTS.Views
             FileEntity file = (FileEntity)((Button)sender).DataContext;
 
             StaticUtilities.PrintObject(file);
+        }
+
+        private void bt_print_all(object sender, RoutedEventArgs e)
+        {
+            ((ItemMDViewModel) DataContext).PrintAll();
+        }
+
+        private void bt_print_missing(object sender, RoutedEventArgs e)
+        {
+            ((ItemMDViewModel) DataContext).PrintMissing();
+        }
+
+        private void bt_print_selection(object sender, RoutedEventArgs e)
+        {
+            ((ItemMDViewModel) DataContext).PrintSelection();
+        }
+
+        private void tb_item_selection_checked(object sender, RoutedEventArgs e)
+        {
+            var item =(Item) ((CheckBox)sender).DataContext;
+
+            var isChecked = ((CheckBox)sender).IsChecked;
+            if (isChecked == null)
+            {
+                return;
+            }
+
+            ((ItemMDViewModel) DataContext).SelectedItems.Add(item);
+        }
+
+        private void tb_item_selection_unchecked(object sender, RoutedEventArgs e)
+        {
+            var item =(Item) ((CheckBox)sender).DataContext;
+
+            var isChecked = ((CheckBox)sender).IsChecked;
+            if (isChecked == null)
+            {
+                return;
+            }
+
+            ((ItemMDViewModel) DataContext).SelectedItems.Remove(item);
+        }
+
+        private void bt_delete_selection(object sender, RoutedEventArgs e)
+        {
+            ((ItemMDViewModel) DataContext).DeleteSelection();
         }
     }
 }

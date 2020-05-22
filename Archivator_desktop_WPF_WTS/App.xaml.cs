@@ -1,3 +1,12 @@
+using System;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Threading;
+using System.Windows;
+using System.Windows.Markup;
+using System.Windows.Threading;
+
 using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.Views;
 using Archivator_desktop_WPF_WTS.Core.Contracts.Services;
@@ -21,7 +30,7 @@ using NavigationService = Archivator_desktop_WPF_WTS.Services.NavigationService;
 
 namespace Archivator_desktop_WPF_WTS
 {
-    // For more inforation about application lifecyle events see https://docs.microsoft.com/dotnet/framework/wpf/app-development/application-management-overview
+    // For more inforation about application lifecycle events see https://docs.microsoft.com/dotnet/framework/wpf/app-development/application-management-overview
     public partial class App : Application
     {
         private IHost _host;
@@ -30,6 +39,12 @@ namespace Archivator_desktop_WPF_WTS
 
         private async void OnStartup(object sender, StartupEventArgs e)
         {
+            //Sets culture in the entire app depending on system settings automatically
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentCulture;
+            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(
+                XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.Name)));
+
             try
             {
                 string appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
@@ -121,6 +136,9 @@ namespace Archivator_desktop_WPF_WTS
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
 
+            services.AddTransient<AboutPageViewModel>();
+            services.AddTransient<AboutPage>();
+
             // Configuration
             services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
         }
@@ -142,6 +160,7 @@ namespace Archivator_desktop_WPF_WTS
     /// <summary>
     /// Allows Entity Framework to find and migrate DbContext. Only used at design time!
     /// </summary>
+    // ReSharper disable once UnusedType.Global Used in design time
     public class DbContextFactory : IDesignTimeDbContextFactory<ArchivatorDbContext>
     {
         public ArchivatorDbContext CreateDbContext(string[] args)

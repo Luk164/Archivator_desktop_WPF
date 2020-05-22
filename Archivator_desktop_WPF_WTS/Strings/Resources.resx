@@ -171,4 +171,7 @@
   <data name="AppDisplayName" xml:space="preserve">
     <value>Archivator_desktop_WPF_WTS</value>
   </data>
+  <data name="ShellAboutPage" xml:space="preserve">
+    <value>About</value>
+  </data>
 </root>

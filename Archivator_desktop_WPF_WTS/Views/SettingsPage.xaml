@@ -7,94 +7,99 @@
     xmlns:models="clr-namespace:Archivator_desktop_WPF_WTS.Models"
     xmlns:strings="clr-namespace:Archivator_desktop_WPF_WTS.Strings"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:viewModels="clr-namespace:Archivator_desktop_WPF_WTS.ViewModels"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:viewModels="clr-namespace:Archivator_desktop_WPF_WTS.ViewModels"
     x:Class="Archivator_desktop_WPF_WTS.Views.SettingsPage"
     Style="{DynamicResource MahApps.Styles.Page}"
     mc:Ignorable="d"
-    d:DesignHeight="450" d:DesignWidth="800">
+    d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance viewModels:SettingsViewModel }">
     <Page.Resources>
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" EnumType="{x:Type models:AppTheme}" />
     </Page.Resources>
-    <Grid d:DataContext="{d:DesignInstance {x:Type viewModels:SettingsViewModel}, IsDesignTimeCreatable=True}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="48" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <TextBlock
-            Style="{StaticResource PageTitleStyle}"
-            Text="{x:Static strings:Resources.SettingsPageTitle}" />
-        <StackPanel
-            x:Name="ContentArea"
-            Grid.Row="1"
-            Margin="{StaticResource MediumLeftRightMargin}">
-
+    <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Visible">
+        <Grid Margin="0,0,0,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
             <TextBlock
-                Margin="{StaticResource SmallTopMargin}"
-                Style="{StaticResource SubtitleTextStyle}"
-                Text="{x:Static strings:Resources.SettingsPagePersonalizationTitle}" />
-            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                Style="{StaticResource PageTitleStyle}"
+                Text="{x:Static strings:Resources.SettingsPageTitle}" />
+            <StackPanel
+                Grid.Row="1"
+                Margin="{StaticResource MediumLeftRightMargin}">
+
                 <TextBlock
-                    Style="{StaticResource BodyTextStyle}"
-                    Text="{x:Static strings:Resources.SettingsPageChooseThemeText}" />
-                <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                    <RadioButton
-                        GroupName="AppTheme"
-                        Content="{x:Static strings:Resources.SettingsPageRadioButtonLightTheme}"
-                        FontSize="{StaticResource MediumFontSize}"
-                        IsChecked="{Binding Theme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light}">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="Checked">
-                                <i:InvokeCommandAction Command="{Binding SetThemeCommand}" CommandParameter="Light" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </RadioButton>
-                    <RadioButton
-                        GroupName="AppTheme"
-                        Content="{x:Static strings:Resources.SettingsPageRadioButtonDarkTheme}"
-                        Margin="{StaticResource XSmallTopMargin}"
-                        FontSize="{StaticResource MediumFontSize}"
-                        IsChecked="{Binding Theme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark}">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="Checked">
-                                <i:InvokeCommandAction Command="{Binding SetThemeCommand}" CommandParameter="Dark" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </RadioButton>
-                    <DockPanel>
-                        <Label DockPanel.Dock="Top" Content="Export to xlsx" Margin="0,20,0,0" FontSize="18" FontWeight="Bold" />
-                        <Button DockPanel.Dock="Left" Content="Export" Click="Button_Click" ToolTip="Exports current database content in a simplified form into Excel document" HorizontalAlignment="Left" Width="52"/>
-                        <mah:MetroProgressBar DockPanel.Dock="Right" HorizontalAlignment="Right" Width="200"/>
-                    </DockPanel>
-                    <Label Content="Export to xlsx" Margin="0,20,0,0" FontSize="18" FontWeight="Bold" />
-                    <Button Content="Export" Click="Button_Click" ToolTip="Exports current database content in a simplified form into Excel document" HorizontalAlignment="Left" Width="52"/>
+                    Margin="{StaticResource SmallTopMargin}"
+                    Style="{StaticResource SubtitleTextStyle}"
+                    Text="{x:Static strings:Resources.SettingsPagePersonalizationTitle}" />
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                    <TextBlock
+                        Style="{StaticResource BodyTextStyle}"
+                        Text="{x:Static strings:Resources.SettingsPageChooseThemeText}" />
+                    <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                        <RadioButton
+                            GroupName="AppTheme"
+                            Content="{x:Static strings:Resources.SettingsPageRadioButtonLightTheme}"
+                            FontSize="{StaticResource MediumFontSize}"
+                            IsChecked="{Binding Theme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <i:InvokeCommandAction Command="{Binding SetThemeCommand}" CommandParameter="Light" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+                        <RadioButton
+                            GroupName="AppTheme"
+                            Content="{x:Static strings:Resources.SettingsPageRadioButtonDarkTheme}"
+                            Margin="{StaticResource XSmallTopMargin}"
+                            FontSize="{StaticResource MediumFontSize}"
+                            IsChecked="{Binding Theme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <i:InvokeCommandAction Command="{Binding SetThemeCommand}" CommandParameter="Dark" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+                        <DockPanel>
+                            <Label DockPanel.Dock="Top" Content="Export to xlsx" Margin="0,20,0,0" FontSize="18" FontWeight="Bold" />
+                            <Button DockPanel.Dock="Left" Content="Export" Click="Export_Button_Click" ToolTip="Exports current database content in a simplified form into Excel document" HorizontalAlignment="Left" Width="52"/>
+                            <mah:MetroProgressBar x:Name="Export_MetroProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="200"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label DockPanel.Dock="Top" Content="Clear database" Margin="0,20,0,0" FontSize="18" FontWeight="Bold" />
+                            <Button DockPanel.Dock="Left" IsEnabled="{Binding ElementName=prime_delete_button, Path=IsChecked}" Content="Clear" Click="bt_purge_database" ToolTip="Deletes content of database" HorizontalAlignment="Left" Width="52" Foreground="#FFFF4141"/>
+                            <mah:MetroProgressBar x:Name="Purge_MetroProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="200"/>
+                            <CheckBox x:Name="prime_delete_button" Content="Unlock" Width="93"/>
+                        </DockPanel>
+                    </StackPanel>
                 </StackPanel>
-                <StackPanel/>
+
+                <TextBlock
+                    Margin="{StaticResource SmallTopMargin}"
+                    Style="{StaticResource SubtitleTextStyle}"
+                    Text="{x:Static strings:Resources.SettingsPageAboutTitle}" />
+                <TextBlock
+                    Text="{Binding VersionDescription, Mode=OneWay}"
+                    Margin="{StaticResource XSmallTopMargin}"
+                    Style="{StaticResource BodyTextStyle}" />
+                <TextBlock
+                    Margin="{StaticResource XSmallTopMargin}"
+                    Style="{StaticResource BodyTextStyle}"
+                    Text="{x:Static strings:Resources.SettingsPageAboutText}" />
+
+                <TextBlock
+                    Margin="{StaticResource SmallTopMargin}"
+                    AutomationProperties.Name="{Binding Text, ElementName=settingsPrivacyStatement}"><Hyperlink
+                        Command="{Binding PrivacyStatementCommand}"
+                        AutomationProperties.Name="{Binding Text, ElementName=settingsPrivacyStatement}"><InlineUIContainer>
+                            <TextBlock
+                                x:Name="settingsPrivacyStatement"
+                                Style="{StaticResource BodyTextStyle}"
+                                Text="{x:Static strings:Resources.SettingsPagePrivacyStatementText}" />
+                        </InlineUIContainer></Hyperlink></TextBlock>
+                <Button Click="bt_quit" Content="Quit" HorizontalAlignment="Left" Margin="0,10,0,0"/>
             </StackPanel>
-
-            <TextBlock
-                Margin="{StaticResource SmallTopMargin}"
-                Style="{StaticResource SubtitleTextStyle}"
-                Text="{x:Static strings:Resources.SettingsPageAboutTitle}" />
-            <TextBlock
-                Text="{Binding VersionDescription, Mode=OneWay}"
-                Margin="{StaticResource XSmallTopMargin}"
-                Style="{StaticResource BodyTextStyle}" />
-            <TextBlock
-                Margin="{StaticResource XSmallTopMargin}"
-                Style="{StaticResource BodyTextStyle}"
-                Text="{x:Static strings:Resources.SettingsPageAboutText}" />
-
-            <TextBlock
-                Margin="{StaticResource SmallTopMargin}"
-                AutomationProperties.Name="{Binding Text, ElementName=settingsPrivacyStatement}"><Hyperlink
-                    Command="{Binding PrivacyStatementCommand}"
-                    AutomationProperties.Name="{Binding Text, ElementName=settingsPrivacyStatement}"><InlineUIContainer>
-                        <TextBlock
-                            x:Name="settingsPrivacyStatement"
-                            Style="{StaticResource BodyTextStyle}"
-                            Text="{x:Static strings:Resources.SettingsPagePrivacyStatementText}" />
-                    </InlineUIContainer></Hyperlink></TextBlock>
-        </StackPanel>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>

@@ -169,6 +169,15 @@ namespace Archivator_desktop_WPF_WTS.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        public static string ShellAboutPage {
+            get {
+                return ResourceManager.GetString("ShellAboutPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to MasterDetail.
         /// </summary>
         public static string ShellItemMDPage {

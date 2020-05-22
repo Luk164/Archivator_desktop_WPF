@@ -68,7 +68,7 @@ namespace Archivator_desktop_WPF_WTS
 
             try
             {
-                conn.Open();   // Check the database connection
+                conn.Open(); // Check the database connection
 
                 return true;
             }
@@ -119,6 +119,7 @@ namespace Archivator_desktop_WPF_WTS
                 image.StreamSource = mem;
                 image.EndInit();
             }
+
             image.Freeze();
             return image;
         }
@@ -133,28 +134,35 @@ namespace Archivator_desktop_WPF_WTS
             //add all required tags that are not already present
             foreach (Tag tag in listOfSelectedTags.Where(tag => Event.Tags.All(event2Tag => event2Tag.Tag != tag)))
             {
-                Event.Tags.Add(new Event2Tag() { Event = Event, Tag = tag });
+                Event.Tags.Add(new Event2Tag {Event = Event, Tag = tag});
             }
 
             //remove all tags that are not supposed to be there
-            foreach (Event2Tag event2Tag in Event.Tags.ToList().Where(event2Tag => !listOfSelectedTags.Contains(event2Tag.Tag)))
+            foreach (var event2Tag in Event.Tags.ToList()
+                .Where(event2Tag => !listOfSelectedTags.Contains(event2Tag.Tag)))
             {
                 Event.Tags.Remove(event2Tag);
             }
         }
 
-        public static void UniversalPrint(int id, string name, char type, byte[] qrCode)
+        /// <summary>
+        /// Generates object of type FlowDocument which is then used for ticket printing.
+        /// </summary>
+        /// <param name="identifier">Id of object to be printed (for item entity alternate key)</param>
+        /// <param name="name">Name of object to be printed</param>
+        /// <param name="qrCode">QR code to be printed on the ticket (can be any image)</param>
+        /// <param name="dialog">Dialog with data regarding printing information</param>
+        /// <returns>Flow document with all relevant values ready for printing</returns>
+        public static FlowDocument GenerateFlowDocument(string identifier, string name, byte[] qrCode,
+            PrintDialog dialog)
         {
-            PrintDialog dialog = new PrintDialog();
-            if (dialog.ShowDialog() != true) return;
-
-            FlowDocument flowDoc = new FlowDocument
+            var flowDoc = new FlowDocument
             {
                 PageWidth = dialog.PrintableAreaWidth,
                 PageHeight = dialog.PrintableAreaHeight + 100,
                 PagePadding = new Thickness(15, 20, 0, 0)
             };
-            flowDoc.Blocks.Add(new Paragraph(new Run(type + " - " + id + "\n" + name))
+            flowDoc.Blocks.Add(new Paragraph(new Run(identifier + "\n" + name))
             {
                 FontSize = 19
             });
@@ -169,8 +177,7 @@ namespace Archivator_desktop_WPF_WTS
                 ClipToBounds = true
             }));
 
-            IDocumentPaginatorSource idpSource = flowDoc;
-            dialog.PrintDocument(idpSource.DocumentPaginator, "");
+            return flowDoc;
         }
 
 
@@ -180,19 +187,70 @@ namespace Archivator_desktop_WPF_WTS
         /// <param name="objectToPrint">Item or FileEntity to be printed. Throws exception if a different type is passed</param>
         public static void PrintObject(object objectToPrint)
         {
-            DbObjectToQRCodeConverter converter = new DbObjectToQRCodeConverter();
-            byte[] image = (byte[])converter.Convert(objectToPrint, null, null, null);
+            PrintDialog dialog = new PrintDialog();
+            if (dialog.ShowDialog() != true) return;
+            IDocumentPaginatorSource idpSource;
+
+            var converter = new DbObjectToQRCodeConverter();
+            var image = (byte[]) converter.Convert(objectToPrint, null, null, null);
 
             switch (objectToPrint)
             {
                 case Item item:
-                    StaticUtilities.UniversalPrint(item.Id, item.Name, 'I', image);
+                    idpSource = GenerateFlowDocument(
+                        item.AlternateKey,
+                        item.Name,
+                        (byte[]) converter.Convert(objectToPrint, null, null, null), dialog);
                     break;
                 case FileEntity fileEntity:
-                    StaticUtilities.UniversalPrint(fileEntity.Id, fileEntity.FileName, 'F', image);
+                    idpSource = GenerateFlowDocument(fileEntity.ParentItem.AlternateKey + "/" + fileEntity.Id,
+                        fileEntity.FileName, (byte[]) converter.Convert(objectToPrint, null, null, null), dialog);
                     break;
                 default:
-                    throw new Exception("Unknown type passed to printObject, did you add another allowed type to DbObjectToQRCodeConverter?");
+                    throw new Exception(
+                        "Unknown type passed to printObject, did you add another allowed type to DbObjectToQRCodeConverter?");
+            }
+
+            dialog.PrintDocument(idpSource.DocumentPaginator, "Archivator print job singular");
+        }
+
+        /// <summary>
+        /// Print list of objects. List must consist of entirely Items or FileEntities or exception will occur.
+        /// </summary>
+        /// <param name="objectsToPrint">List of objects, either Item or EventEntity to be printed</param>
+        public static void PrintMultipleObjects(List<Item> objectsToPrint)
+        {
+            if (objectsToPrint.Count == 0) return;
+
+            PrintDialog dialog = new PrintDialog();
+            if (dialog.ShowDialog() != true) return;
+
+            var converter = new DbObjectToQRCodeConverter();
+
+            foreach (var idpSource in objectsToPrint.Select(i => GenerateFlowDocument(i.AlternateKey, i.Name,
+                (byte[])converter.Convert(i, null, null, null), dialog)))
+            {
+                dialog.PrintDocument(((IDocumentPaginatorSource)idpSource).DocumentPaginator, "Item print job");
+            }
+        }
+
+        /// <summary>
+        /// Print list of objects. List must consist of entirely Items or FileEntities or exception will occur.
+        /// </summary>
+        /// <param name="objectsToPrint">List of objects, either Item or EventEntity to be printed</param>
+        public static void PrintMultipleObjects(List<FileEntity> objectsToPrint)
+        {
+            if (objectsToPrint.Count == 0) return;
+
+            PrintDialog dialog = new PrintDialog();
+            if (dialog.ShowDialog() != true) return;
+
+            var converter = new DbObjectToQRCodeConverter();
+
+            foreach (var idpSource in objectsToPrint.Cast<FileEntity>().ToList().Select(f => GenerateFlowDocument(f.ParentItem.AlternateKey, f.FileName,
+                (byte[])converter.Convert(f, null, null, null), dialog)))
+            {
+                dialog.PrintDocument(((IDocumentPaginatorSource)idpSource).DocumentPaginator, "FileEntity print job");
             }
         }
     }

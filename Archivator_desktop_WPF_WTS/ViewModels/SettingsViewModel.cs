@@ -7,13 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using OfficeOpenXml;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Local Disabled because structs need to be accessible to EPPlus library for xlsx generation
 
 namespace Archivator_desktop_WPF_WTS.ViewModels
@@ -39,6 +33,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private struct Simple_item
         {
             public int ItemId { get; set; }
+            public string SecondaryId { get; set; }
             public string Name { get; set; }
             public string Description { get; set; }
             public string RelatedItems { get; set; }
@@ -107,7 +102,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// </summary>
         public ICommand PrivacyStatementCommand => _privacyStatementCommand ??= new RelayCommand(OnPrivacyStatement);
 
-        public SettingsViewModel(IOptions<AppConfig> config, IThemeSelectorService themeSelectorService, ISystemService systemService, IApplicationInfoService applicationInfoService, ArchivatorDbContext context)
+        public SettingsViewModel(IOptions<AppConfig> config, IThemeSelectorService themeSelectorService,
+            ISystemService systemService, IApplicationInfoService applicationInfoService, ArchivatorDbContext context)
         {
             _config = config.Value;
             _themeSelectorService = themeSelectorService;
@@ -128,7 +124,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
         private void OnSetTheme(string themeName)
         {
-            AppTheme theme = (AppTheme)Enum.Parse(typeof(AppTheme), themeName);
+            var theme = (AppTheme) Enum.Parse(typeof(AppTheme), themeName);
             _themeSelectorService.SetTheme(theme);
         }
 
@@ -169,7 +165,8 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             }
             else
             {
-                MessageBox.Show("Export has been cancelled by user!", "Export cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Export has been cancelled by user!", "Export cancelled", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
             }
         }
 
@@ -180,17 +177,18 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private async Task<List<Simple_item>> GenerateSimpleItemList()
         {
             return (from item in await _context.Items.ToListAsync()
-                    select new Simple_item()
-                    {
-                        Name = item.Name,
-                        CreateDateTime = item.CreateDateTime.ToLongDateString(),
-                        Description = item.Description,
-                        Events = item.Events.Aggregate("", (current, o) => current + ";" + o.Id),
-                        Files = item.Files.Aggregate("", (current, o) => current + ";" + o.Id),
-                        ItemId = item.Id,
-                        RelatedItems = item.RelatedItems.Aggregate("", (current, o) => current + ";" + o.ToId),
-                        UserId = item.UserId.ToString()
-                    }).ToList();
+                select new Simple_item
+                {
+                    Name = item.Name,
+                    CreateDateTime = item.CreateDateTime.ToShortDateString(),
+                    Description = item.Description,
+                    Events = item.Events.Aggregate("", (current, o) => current + ";" + o.Id),
+                    Files = item.Files.Aggregate("", (current, o) => current + ";" + o.Id),
+                    ItemId = item.Id,
+                    SecondaryId = item.AlternateKey,
+                    RelatedItems = item.RelatedItems.Aggregate("", (current, o) => current + ";" + o.ToId),
+                    UserId = item.UserId.ToString()
+                }).ToList();
         }
 
         /// <summary>
@@ -200,13 +198,13 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private async Task<List<Simple_file>> GenerateSimpleFileList()
         {
             return (from file in await _context.Files.ToListAsync()
-                    select new Simple_file()
-                    {
-                        FileName = file.FileName,
-                        Id = file.Id,
-                        Description = file.Description,
-                        ParentItem = file.ParentItem.Id
-                    }).ToList();
+                select new Simple_file
+                {
+                    FileName = file.FileName,
+                    Id = file.Id,
+                    Description = file.Description,
+                    ParentItem = file.ParentItem.Id
+                }).ToList();
         }
 
         /// <summary>
@@ -216,18 +214,18 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private async Task<List<Simple_event>> GenerateSimpleEventList()
         {
             return (from eventEntity in await _context.Events.ToListAsync()
-                    select new Simple_event()
-                    {
-                        Id = eventEntity.Id,
-                        AuxDate = eventEntity.AuxDate,
-                        Date = eventEntity.Date.ToLongDateString(),
-                        Description = eventEntity.Description,
-                        Location = eventEntity.Location,
-                        Name = eventEntity.Name,
-                        ParenItem = eventEntity.ParenItem.Id,
-                        Tags = eventEntity.Tags.Aggregate("", (current, o) => current + ";" + o.TagId),
-                        UserId = eventEntity.UserId
-                    }).ToList();
+                select new Simple_event
+                {
+                    Id = eventEntity.Id,
+                    AuxDate = eventEntity.AuxDate,
+                    Date = eventEntity.Date.ToShortDateString(),
+                    Description = eventEntity.Description,
+                    Location = eventEntity.Location,
+                    Name = eventEntity.Name,
+                    ParenItem = eventEntity.ParenItem.Id,
+                    Tags = eventEntity.Tags.Aggregate("", (current, o) => current + ";" + o.TagId),
+                    UserId = eventEntity.UserId
+                }).ToList();
         }
 
         /// <summary>
@@ -237,12 +235,22 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         private async Task<List<Simple_tag>> GenerateSimpleTagList()
         {
             return (from tag in await _context.Tags.ToListAsync()
-                    select new Simple_tag()
-                    {
-                        Id = tag.Id,
-                        Events = tag.Events.Aggregate("", (current, o) => current + ";" + o.EventId),
-                        Name = tag.Name
-                    }).ToList();
+                select new Simple_tag
+                {
+                    Id = tag.Id,
+                    Events = tag.Events.Aggregate("", (current, o) => current + ";" + o.EventId),
+                    Name = tag.Name
+                }).ToList();
+        }
+
+        public async Task PurgeDatabase()
+        {
+            var choice = MessageBox.Show("Are you sure you want to delete the entire database? There is no way back!",
+                "!!!WARNING!!!", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (choice == MessageBoxResult.Yes)
+            {
+                await _context.Database.EnsureDeletedAsync();
+            }
         }
     }
 }
