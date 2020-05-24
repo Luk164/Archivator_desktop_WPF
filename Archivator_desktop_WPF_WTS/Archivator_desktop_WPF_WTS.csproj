@@ -8,9 +8,9 @@
     <XamlDebuggingInformation>true</XamlDebuggingInformation>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <StartupObject>Archivator_desktop_WPF_WTS.App</StartupObject>
-    <Version>1.1.7</Version>
-    <AssemblyVersion>1.1.7.0</AssemblyVersion>
-    <FileVersion>1.1.7.0</FileVersion>
+    <Version>1.1.8</Version>
+    <AssemblyVersion>1.1.8.0</AssemblyVersion>
+    <FileVersion>1.1.8.0</FileVersion>
     <ApplicationIcon>Docarchive_icon-icons.com_51167.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>

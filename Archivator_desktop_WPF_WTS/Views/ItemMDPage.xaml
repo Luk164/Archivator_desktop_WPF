@@ -131,7 +131,8 @@
                             </Button>
                             <mah:Badged Badge="{Binding SelectedItems.Count}">
                                 <Button Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
-                                        Click="bt_delete_selection" FontSize="24" IsEnabled="{Binding SelectedItems, Converter={StaticResource ListToBooleanHasContentConverter}}"
+                                        Click="bt_delete_selection" FontSize="24"
+                                        IsEnabled="{Binding SelectedItems, Converter={StaticResource ListToBooleanHasContentConverter}}"
                                         Width="{Binding Content.(StackPanel.Width), RelativeSource={RelativeSource Self}}"
                                         HorizontalAlignment="Left" HorizontalContentAlignment="Left">
                                     <StackPanel Orientation="Horizontal">
@@ -179,10 +180,16 @@
                                        Margin="{StaticResource XSmallLeftMargin}"
                                        Text="{Binding Selected.TicketPrintDateTime, FallbackValue=Ticket printed: x.y.zzzz d:t, Mode=OneWay, StringFormat=Ticket printed: {0:g}, TargetNullValue=Ticket printed: Never}" />
 
-                            <TextBlock
-                                Margin="{StaticResource MediumTopMargin}"
-                                Style="{StaticResource SubtitleTextStyle}"
-                                Text="Description" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock
+                                    Margin="{StaticResource MediumTopMargin}"
+                                    Style="{StaticResource SubtitleTextStyle}"
+                                    Text="Description" />
+                                <Button Click="Bt_DescViewer"
+                                        Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
+                                        DockPanel.Dock="Right" Content="&#xE740;" FontFamily="Segoe MDL2 Assets"
+                                        HorizontalAlignment="Right" FontSize="20" />
+                            </StackPanel>
                             <TextBlock
                                 Style="{StaticResource BodyTextStyle}"
                                 Text="{Binding Selected.Description}"

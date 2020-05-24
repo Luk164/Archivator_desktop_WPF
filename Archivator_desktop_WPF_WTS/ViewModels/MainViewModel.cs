@@ -45,19 +45,25 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         }
 
         /// <summary>
-        /// Saves changes to database, checks if internal ID not already present.
+        /// Saves changes to database, checks if internal ID not already present
         /// </summary>
         public void SaveChanges()
         {
+            if (CurrItem.AlternateKey != CurrItem.Category + "-" + CurrItem.InternalId + "-" + CurrItem.SubCategory)
+            {
+                throw new NotImplementedException("ERROR: Changes to alternate key composition were made. Please make appropriate adjustments!");
+            }
+
             if (_context.Items.Any(i =>
-                i.InternalId == CurrItem.InternalId) && CurrItem.Id == 0)
+                i.InternalId == CurrItem.InternalId && i.Category == CurrItem.Category && i.SubCategory == CurrItem.SubCategory) && CurrItem.Id == 0)
             {
                 MessageBox.Show(
                     "ERROR: Item with this internal ID already exists in database! Please choose a different one!",
                     "Id not unique", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-            _context.SaveChanges();
+
+            _context.SaveChangesAsync();
         }
 
         public void OnNavigatedTo(object parameter)
@@ -95,9 +101,9 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         }
 
         /// <summary>
-        /// Creates new tag, adds to database and saves changes
+        /// Creates new tag and it adds to database. Does not save changes.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">Name of new Tag</param>
         public void CreateTag(string name)
         {
             var newTag = _context.CreateProxy<Tag>();
@@ -107,10 +113,12 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             Tags.Add(newTag);
         }
 
+        /// <summary>
+        /// Opens description editor on separate window
+        /// </summary>
         public void ShowBigEditor()
         {
-            Window test = new Window {Content = new BigEditor{DataContext = CurrItem}};
-            test.Show();
+            new Window {Content = new BigEditor{DataContext = CurrItem}}.Show();
         }
     }
 }

@@ -86,5 +86,10 @@ namespace Archivator_desktop_WPF_WTS.Views
         {
             ((ItemMDViewModel) DataContext).DeleteSelection();
         }
+
+        private void Bt_DescViewer(object sender, RoutedEventArgs e)
+        {
+            ((ItemMDViewModel) DataContext).ShowBigViewer();
+        }
     }
 }
