@@ -12,6 +12,7 @@
 
     <Grid>
         <TextBox AcceptsReturn="True"
+                 Style="{StaticResource MahApps.Styles.TextBox}"
                  HorizontalAlignment="Stretch"
                  Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  TextWrapping="Wrap" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto"/>

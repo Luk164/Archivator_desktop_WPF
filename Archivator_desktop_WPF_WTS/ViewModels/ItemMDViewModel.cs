@@ -10,6 +10,7 @@ using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.ViewModels;
 using Archivator_desktop_WPF_WTS.Helpers;
 using Archivator_desktop_WPF_WTS.Models;
+using Archivator_desktop_WPF_WTS.Views;
 using ArchivatorDb;
 using ArchivatorDb.Entities;
 using Microsoft.Win32;
@@ -292,6 +293,11 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                 SelectedItems.AsParallel().ForAll(item => item.TicketPrintDateTime = DateTime.Now);
                 _context.SaveChangesAsync();
             }
+        }
+
+        public void ShowBigViewer()
+        {
+            new Window {Content = new BigViewer{DataContext = Selected}}.Show();
         }
     }
 }
