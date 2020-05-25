@@ -3,8 +3,7 @@ using System.Windows;
 
 using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Models;
-
-using MahApps.Metro;
+using ControlzEx.Theming;
 
 using Microsoft.Win32;
 
@@ -41,10 +40,10 @@ namespace Archivator_desktop_WPF_WTS.Services
                 }
             }
 
-            var currentTheme = ThemeManager.DetectTheme(Application.Current);
+            var currentTheme = ThemeManager.Current.DetectTheme(Application.Current);
             if (currentTheme == null || currentTheme.Name != theme.ToString())
             {
-                ThemeManager.ChangeTheme(Application.Current, $"{theme}.Blue");
+                ThemeManager.Current.ChangeTheme(Application.Current, $"{theme}.Blue");
                 App.Current.Properties["Theme"] = theme.ToString();
                 return true;
             }
