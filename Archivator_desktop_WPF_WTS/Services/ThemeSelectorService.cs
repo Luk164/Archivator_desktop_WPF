@@ -12,8 +12,7 @@ namespace Archivator_desktop_WPF_WTS.Services
 {
     public class ThemeSelectorService : IThemeSelectorService
     {
-        private bool IsHighContrastActive
-                        => SystemParameters.HighContrast;
+        //private bool IsHighContrastActive => SystemParameters.HighContrast;
 
         public ThemeSelectorService()
         {
