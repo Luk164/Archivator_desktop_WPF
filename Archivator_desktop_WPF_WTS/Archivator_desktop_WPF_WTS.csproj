@@ -36,7 +36,7 @@
     <PackageReference Include="QRCoder" Version="1.3.9" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ArchivatorDb\ArchivatorDb\ArchivatorDb.csproj" />
+    <ProjectReference Include="..\ArchivatorDb\ArchivatorDb\ArchivatorDb.csproj" />
     <ProjectReference Include="..\Archivator_desktop_WPF_WTS.Core\Archivator_desktop_WPF_WTS.Core.csproj" />
   </ItemGroup>
 
