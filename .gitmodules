@@ -1,0 +1,3 @@
+[submodule "ArchivatorDb"]
+	path = ArchivatorDb
+	url = https://github.com/Luk164/ArchivatorDb.git

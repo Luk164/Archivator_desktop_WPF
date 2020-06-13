@@ -25,12 +25,12 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// </summary>
         public Item CurrItem { get; set; }
 
-        private ArchivatorDbContext _context;
+        public ArchivatorDbContext _context { get; private set; }
 
         /// <summary>
         /// Provides access to list of all tags in database
         /// </summary>
-        public IList<Tag> Tags { get; }
+        public IList<Tag> Tags { get; private set; }
 
         public static IEnumerable<char> Alphabet => Item.CategoryList;
 
@@ -66,17 +66,18 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                 return;
             }
 
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
 
         public void OnNavigatedTo(object parameter)
         {
             if (!(parameter is EditModel model) || !(model.editedObject is Item item)) return;
 
-            _context.DisposeAsync();
-            _context = model.context;
-            CurrItem = item;
-            CurrItem.ModifyDateTime = DateTime.Now;
+            _context.DisposeAsync(); //get rid of old context
+            _context = model.context; //load new items context
+            CurrItem = item; //load new item
+            CurrItem.ModifyDateTime = DateTime.Now; //save modification time
+            Tags = _context.Tags.ToList(); //fixes a bug with editing tags for eventEntity
 
             foreach (EventEntity eventEntity in CurrItem.Events)
             {

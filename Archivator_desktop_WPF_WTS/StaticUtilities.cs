@@ -13,6 +13,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media.Imaging;
+using Archivator_desktop_WPF_WTS.Converters;
+using ArchivatorDb.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Archivator_desktop_WPF_WTS
 {
@@ -131,17 +135,20 @@ namespace Archivator_desktop_WPF_WTS
         /// <param name="listOfSelectedTags">List of tags that are supposed to be in Event</param>
         public static void SyncEventWithTags(EventEntity Event, List<Tag> listOfSelectedTags)
         {
+            //More effective but buggy
             //add all required tags that are not already present
-            foreach (Tag tag in listOfSelectedTags.Where(tag => Event.Tags.All(event2Tag => event2Tag.Tag != tag)))
+            foreach (var tag in listOfSelectedTags.Where(selectedTag =>
+                Event.Tags.All(tag => tag.Tag.Name != selectedTag.Name)))
             {
                 Event.Tags.Add(new Event2Tag {Event = Event, Tag = tag});
             }
 
             //remove all tags that are not supposed to be there
             foreach (var event2Tag in Event.Tags.ToList()
-                .Where(event2Tag => !listOfSelectedTags.Contains(event2Tag.Tag)))
+                .Where(event2Tag => listOfSelectedTags.All(tag => tag.Name != event2Tag.Tag.Name))
+            ) //Contains(event2Tag.Tag)
             {
-                Event.Tags.Remove(event2Tag);
+                Event.Tags.Remove(Event.Tags.First(event2Tag1 => event2Tag1.Tag.Name == event2Tag.Tag.Name));
             }
         }
 
@@ -180,7 +187,6 @@ namespace Archivator_desktop_WPF_WTS
             return flowDoc;
         }
 
-
         /// <summary>
         /// Prints passed object. Only Item and FileEntity is allowed
         /// </summary>
@@ -192,7 +198,6 @@ namespace Archivator_desktop_WPF_WTS
             IDocumentPaginatorSource idpSource;
 
             var converter = new DbObjectToQRCodeConverter();
-            var image = (byte[]) converter.Convert(objectToPrint, null, null, null);
 
             switch (objectToPrint)
             {
@@ -228,9 +233,9 @@ namespace Archivator_desktop_WPF_WTS
             var converter = new DbObjectToQRCodeConverter();
 
             foreach (var idpSource in objectsToPrint.Select(i => GenerateFlowDocument(i.AlternateKey, i.Name,
-                (byte[])converter.Convert(i, null, null, null), dialog)))
+                (byte[]) converter.Convert(i, null, null, null), dialog)))
             {
-                dialog.PrintDocument(((IDocumentPaginatorSource)idpSource).DocumentPaginator, "Item print job");
+                dialog.PrintDocument(((IDocumentPaginatorSource) idpSource).DocumentPaginator, "Item print job");
             }
         }
 
@@ -247,10 +252,11 @@ namespace Archivator_desktop_WPF_WTS
 
             var converter = new DbObjectToQRCodeConverter();
 
-            foreach (var idpSource in objectsToPrint.Cast<FileEntity>().ToList().Select(f => GenerateFlowDocument(f.ParentItem.AlternateKey, f.FileName,
-                (byte[])converter.Convert(f, null, null, null), dialog)))
+            foreach (var idpSource in objectsToPrint.Cast<FileEntity>().ToList().Select(f =>
+                GenerateFlowDocument(f.ParentItem.AlternateKey, f.FileName,
+                    (byte[]) converter.Convert(f, null, null, null), dialog)))
             {
-                dialog.PrintDocument(((IDocumentPaginatorSource)idpSource).DocumentPaginator, "FileEntity print job");
+                dialog.PrintDocument(((IDocumentPaginatorSource) idpSource).DocumentPaginator, "FileEntity print job");
             }
         }
     }

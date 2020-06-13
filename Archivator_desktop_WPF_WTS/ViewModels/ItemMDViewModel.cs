@@ -141,7 +141,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    SelectedItems.AsParallel().ForAll(item =>
+                    SelectedItems.ForEach(item =>
                     {
                         _context.Remove(item);
                         _items.Remove(item);

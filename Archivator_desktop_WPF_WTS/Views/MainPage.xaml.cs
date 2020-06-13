@@ -165,7 +165,7 @@ namespace Archivator_desktop_WPF_WTS.Views
 
             ((CheckComboBox)sender).SelectedItemsOverride = eventEntity.SelectedTags; //should fix some bugs
 
-            StaticUtilities.SyncEventWithTags(eventEntity, eventEntity.SelectedTags.ToList());
+            StaticUtilities.SyncEventWithTags(eventEntity, eventEntity.SelectedTags.ToList()); //, _viewModel._context
         }
 
         private void DataGrid_OnAddingEvent(object sender, AddingNewItemEventArgs e)

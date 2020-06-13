@@ -1,6 +1,7 @@
 ﻿using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Models;
-using MahApps.Metro;
+using ControlzEx.Theming;
+
 using Microsoft.Win32;
 using System;
 using System.Windows;
@@ -9,8 +10,7 @@ namespace Archivator_desktop_WPF_WTS.Services
 {
     public class ThemeSelectorService : IThemeSelectorService
     {
-        private bool IsHighContrastActive
-                        => SystemParameters.HighContrast;
+        //private bool IsHighContrastActive => SystemParameters.HighContrast;
 
         public ThemeSelectorService()
         {
@@ -39,10 +39,10 @@ namespace Archivator_desktop_WPF_WTS.Services
                 }
             }
 
-            Theme currentTheme = ThemeManager.DetectTheme(Application.Current);
+            var currentTheme = ThemeManager.Current.DetectTheme(Application.Current);
             if (currentTheme == null || currentTheme.Name != theme.ToString())
             {
-                ThemeManager.ChangeTheme(Application.Current, $"{theme}.Blue");
+                ThemeManager.Current.ChangeTheme(Application.Current, $"{theme}.Blue");
                 App.Current.Properties["Theme"] = theme.ToString();
                 return true;
             }
