@@ -214,7 +214,7 @@
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.1.8"
+        "ProductVersion" = "8:1.1.9"
         "Manufacturer" = "8:TUKE"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

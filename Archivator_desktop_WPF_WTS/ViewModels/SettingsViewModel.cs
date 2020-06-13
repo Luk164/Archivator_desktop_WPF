@@ -87,6 +87,18 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             public string Events { get; set; }
         }
 
+        private struct Simple_Conn_Item2Item
+        {
+            public int ItemId1 { get; set; }
+            public int ItemId2 { get; set; }
+        }
+
+        private struct Simple_Conn_Event2Tag
+        {
+            public int EventId { get; set; }
+            public int TagId { get; set; }
+        }
+
         public AppTheme Theme
         {
             get => _theme;
@@ -165,6 +177,12 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
 
                 var ws_tags = excel.Workbook.Worksheets.Add("Tags");
                 ws_tags.Cells[1, 1].LoadFromCollection(await GenerateSimpleTagList(), true);
+
+                var ws_item2item = excel.Workbook.Worksheets.Add("item2item");
+                ws_item2item.Cells[1, 1].LoadFromCollection(await GenerateSimple_Conn_Item2Item(), true);
+
+                var ws_event2tag = excel.Workbook.Worksheets.Add("event2tag");
+                ws_event2tag.Cells[1, 1].LoadFromCollection(await GenerateSimple_Conn_Event2Tag(), true);
 
                 //Write the file to the disk
                 FileInfo fi = new FileInfo(_SD.FileName);
@@ -248,6 +266,18 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                     Events = tag.Events.Aggregate("", (current, o) => current + ";" + o.EventId),
                     Name = tag.Name
                 }).ToList();
+        }
+
+        private async Task<List<Simple_Conn_Item2Item>> GenerateSimple_Conn_Item2Item()
+        {
+            return (from item in await _context.Items.ToListAsync() 
+                from item2Item in item.RelatedItems select new Simple_Conn_Item2Item {ItemId1 = item2Item.FromId, ItemId2 = item2Item.ToId}).ToList();
+        }
+
+        private async Task<List<Simple_Conn_Event2Tag>> GenerateSimple_Conn_Event2Tag()
+        {
+            return (from eventEntity in await _context.Events.ToListAsync() 
+                from event2Tag in eventEntity.Tags select new Simple_Conn_Event2Tag {EventId = event2Tag.EventId, TagId = event2Tag.TagId}).ToList();
         }
 
         public async Task PurgeDatabase()
