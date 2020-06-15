@@ -1,0 +1,2 @@
+MainPackage=D:\User_files\Projekty\C#\Archivator_desktop_WPF_WTS\Archivator_Packager\bin\x64\Release\Archivator_Packager_0.2.0.0_x64.msix
+SymbolPackage=D:\User_files\Projekty\C#\Archivator_desktop_WPF_WTS\Archivator_Packager\obj\x64\Release\Symbols\Archivator_Packager_0.2.0.0_x64.appxsym
