@@ -6,7 +6,6 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Threading;
-
 using Archivator_desktop_WPF_WTS.Contracts.Services;
 using Archivator_desktop_WPF_WTS.Contracts.Views;
 using Archivator_desktop_WPF_WTS.Core.Contracts.Services;
@@ -35,7 +34,9 @@ namespace Archivator_desktop_WPF_WTS
     {
         private IHost _host;
         private IConfiguration _configuration;
-        private readonly DbContextOptionsBuilder<ArchivatorDbContext> _builder = new DbContextOptionsBuilder<ArchivatorDbContext>();
+
+        private readonly DbContextOptionsBuilder<ArchivatorDbContext> _builder =
+            new DbContextOptionsBuilder<ArchivatorDbContext>();
 
         private async void OnStartup(object sender, StartupEventArgs e)
         {
@@ -61,11 +62,15 @@ namespace Archivator_desktop_WPF_WTS
             }
             catch (Exception exception)
             {
-                MessageBox.Show("ERROR: An unhandled exception has occured! " + exception.Message, "FATAL ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("ERROR: An unhandled exception has occured! " + exception.Message, "FATAL ERROR",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
             }
         }
 
+        /// <summary>
+        /// Ensures database is updated with the latest schema
+        /// </summary>
         private void InitDatabase()
         {
             try
@@ -75,21 +80,18 @@ namespace Archivator_desktop_WPF_WTS
             }
             catch (Exception e)
             {
-                MessageBoxResult result = MessageBox.Show("An error occured while trying to migrate database: " + e.Message + " please check connection string. If you do not already have SQL Express installed, click yes to install it.", "Exception Occured",
-                    MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-                // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault MessageBox return only Yes or No
-                switch (result)
-                {
-                    case MessageBoxResult.Yes:
-                        System.Diagnostics.Process.Start("~\\SQL2019-SSEI-Expr.exe");
-                        break;
-                    case MessageBoxResult.No:
-                        break;
-                }
+                MessageBox.Show(
+                    "An error occured while trying to migrate database: " + e.Message +
+                    " please check connection string. If you do not already have SQL Express installed, install it.",
+                    "Exception Occured",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
+        /// <summary>
+        /// Prepares settings builder for database
+        /// </summary>
+        /// <param name="builder"></param>
         private void SetupBuilder(DbContextOptionsBuilder builder)
         {
             StaticUtilities.SetupDatabase(builder, _configuration);
@@ -152,7 +154,8 @@ namespace Archivator_desktop_WPF_WTS
 
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            MessageBox.Show("An unhandled exception just occurred: " + e.Exception.Message, "Exception Occured", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("An unhandled exception just occurred: " + e.Exception.Message, "Exception Occured",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
             e.Handled = true;
         }
     }

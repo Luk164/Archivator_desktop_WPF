@@ -89,9 +89,11 @@ namespace Archivator_desktop_WPF_WTS.Views
         /// </summary>
         /// <param name="sender">Sender of action</param>
         /// <param name="e">Extra parameters</param>
-        private void Bt_submit_OnClick(object sender, RoutedEventArgs e)
+        private async void Bt_submit_OnClick(object sender, RoutedEventArgs e)
         {
+            progress_bar.IsIndeterminate = true;
             _viewModel.SaveChanges();
+            progress_bar.IsIndeterminate = false;
             _navigationService.NavigateTo(typeof(ItemMDViewModel).FullName);
         }
 

@@ -287,6 +287,13 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
             if (choice == MessageBoxResult.Yes)
             {
                 await _context.Database.EnsureDeletedAsync();
+                await _context.Database.MigrateAsync();
+                MessageBox.Show("Database deleted, program will now exit", "Database deleted", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                Application.Current.Shutdown();
+            }
+            else
+            {
+                MessageBox.Show("Database purge cancelled", "Cancelled by user", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
     }
