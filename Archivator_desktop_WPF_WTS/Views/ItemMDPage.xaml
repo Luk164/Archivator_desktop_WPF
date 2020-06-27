@@ -265,11 +265,20 @@
                 <RowDefinition Height="40" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <DockPanel>
+            <Grid>
                 <TextBlock
                     Style="{StaticResource PageTitleStyle}"
                     Text="{x:Static strings:Resources.ItemMDPageTitle}" HorizontalAlignment="Left" />
-            </DockPanel>
+                <Button HorizontalAlignment="Right" Style="{StaticResource MahApps.Styles.Button.MetroWindow.Dark}"
+                        Width="{Binding Content.(StackPanel.Width), RelativeSource={RelativeSource Self}}"
+                        Click="Bt_RefreshContext" MinWidth="20" MinHeight="20" FontSize="24" Margin="0,0,15,0">
+                    <TextBlock
+                        DockPanel.Dock="Left"
+                        Text="&#xE72C;"
+                        Style="{StaticResource BaseIconStyle}"
+                        AutomationProperties.Name="Detail icon" />
+                </Button>
+            </Grid>
             <TextBox Grid.Row="1" mah:TextBoxHelper.Watermark="Search"
                      Text="{Binding SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      VerticalAlignment="Top" Margin="5,0,0,0" />

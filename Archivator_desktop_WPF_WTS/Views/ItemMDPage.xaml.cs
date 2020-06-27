@@ -91,5 +91,10 @@ namespace Archivator_desktop_WPF_WTS.Views
         {
             ((ItemMDViewModel) DataContext).ShowBigViewer();
         }
+
+        private void Bt_RefreshContext(object sender, RoutedEventArgs e)
+        {
+            ((ItemMDViewModel) DataContext).RefreshDbContext();
+        }
     }
 }

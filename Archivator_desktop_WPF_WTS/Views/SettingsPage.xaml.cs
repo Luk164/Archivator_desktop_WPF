@@ -51,8 +51,6 @@ namespace Archivator_desktop_WPF_WTS.Views
             Purge_MetroProgressBar.IsIndeterminate = true;
             await ((SettingsViewModel)DataContext).PurgeDatabase();
             Purge_MetroProgressBar.IsIndeterminate = false;
-            MessageBox.Show("Database deleted, program will now exit", "Database deleted", MessageBoxButton.OK);
-            Application.Current.Shutdown();
         }
     }
 }

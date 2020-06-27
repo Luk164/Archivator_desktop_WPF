@@ -47,7 +47,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// <summary>
         /// Saves changes to database, checks if internal ID not already present
         /// </summary>
-        public void SaveChanges()
+        public async void SaveChanges()
         {
             if (CurrItem.AlternateKey != CurrItem.Category + "-" + CurrItem.InternalId + "-" + CurrItem.SubCategory)
             {
@@ -63,7 +63,7 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
                 return;
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public void OnNavigatedTo(object parameter)

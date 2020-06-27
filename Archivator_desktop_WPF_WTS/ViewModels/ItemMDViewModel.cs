@@ -23,10 +23,11 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
     public class ItemMDViewModel : Observable, INavigationAware
     {
         private Item _selected;
-        private readonly ArchivatorDbContext _context;
+        private ArchivatorDbContext _context;
         private readonly INavigationService _navigationService;
         private FileEntity _selectedFile;
         private string _searchString;
+        private readonly IServiceProvider _provider;
 
         public List<Item> SelectedItems { get; } = new List<Item>();
 
@@ -82,12 +83,18 @@ namespace Archivator_desktop_WPF_WTS.ViewModels
         /// <summary>
         /// Constructor for Item master-detail viewmodel.
         /// </summary>
-        /// <param name="context">ArchivatorDbContext used to interact with database</param>
+        /// <param name="provider">Service provider used to generate ArchivatorDbContext</param>
         /// <param name="navigationService">Service allowing navigation between different pages</param>
-        public ItemMDViewModel(ArchivatorDbContext context, INavigationService navigationService)
+        public ItemMDViewModel(INavigationService navigationService, IServiceProvider provider)
         {
-            _context = context;
+            _provider = provider;
+            _context = (ArchivatorDbContext) provider.GetService(typeof(ArchivatorDbContext));
             _navigationService = navigationService;
+        }
+
+        public void RefreshDbContext()
+        {
+            _context = (ArchivatorDbContext) _provider.GetService(typeof(ArchivatorDbContext));
         }
 
         /// <summary>
